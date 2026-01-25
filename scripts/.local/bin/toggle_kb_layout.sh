@@ -1,4 +1,4 @@
-#!/bin/bash
+!/bin/bash
 
 # 1. Toggle Keyboard Layout
 # Since i3 uses X11, we use setxkbmap. 
