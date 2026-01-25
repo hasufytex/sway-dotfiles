@@ -1,0 +1,51 @@
+#!/usr/bin/env bash
+STEAM_LIBRARY="$HOME/.steam/steam/steamapps"
+START_WS=5
+MAX_WS=20
+
+# ---- find installed games ----
+mapfile -t games < <(
+    find "$STEAM_LIBRARY" -maxdepth 1 -name "appmanifest_*.acf" | while read f; do
+        name=$(grep '"name"' "$f" | head -1 | sed 's/.*"\(.*\)".*/\1/')
+        appid=$(basename "$f" | sed 's/appmanifest_\(.*\)\.acf/\1/')
+        [[ "$name" =~ ^Proton ]] && continue
+        [[ "$name" =~ Steamworks ]] && continue
+        [[ "$name" =~ "Steam Linux Runtime" ]] && continue
+        echo "$name|$appid"
+    done
+)
+
+# ---- select game with dmenu ----
+selection=$(printf '%s\n' "${games[@]}" | cut -d'|' -f1 | dmenu -i -p "Select game:" \
+    -nb "#1e1e1e" -nf "#d4d4d4" \
+    -sb "#264f78" -sf "#ffffff" \
+    -fn "monospace-14")
+
+[ -z "$selection" ] && exit 0
+
+# ---- get appid from selection ----
+appid=$(printf '%s\n' "${games[@]}" | grep "^$selection|" | cut -d'|' -f2)
+
+# ---- find free workspace ----
+free_ws=""
+for ws in $(seq $START_WS $MAX_WS); do
+    # Check if workspace exists and has windows
+    windows=$(i3-msg -t get_workspaces | jq -r ".[] | select(.num==$ws) | .windows // 0")
+    if [ "$windows" -eq 0 ]; then
+        free_ws=$ws
+        break
+    fi
+done
+
+# fallback if all are used
+[ -z "$free_ws" ] && free_ws=$START_WS
+
+# ---- switch to workspace ----
+i3-msg workspace number "$free_ws"
+
+# ---- launch game ----
+__GL_THREADED_OPTIMIZATIONS=0 \
+__GL_SYNC_TO_VBLANK=1 \
+__GL_ALLOW_TRIPLEBUFFER=0 \
+gamescope -w 2560 -h 1440 -f -- \
+steam steam://rungameid/"$appid"

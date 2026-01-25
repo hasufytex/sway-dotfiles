@@ -1,0 +1,19 @@
+[mgr]
+show_hidden = true
+[opener]
+play = [
+    { run = 'mpv "$@"', orphan = true },
+]
+queue = [
+    { run = '''sh -c 'for file in "$@"; do echo "loadfile \"$file\" append-play" | socat - /tmp/mpvsocket 2>/dev/null || mpv "$file"; done' -- "$@"''', orphan = true },
+]
+
+[open]
+prepend_rules = [
+    { url = "*.mp4a", use = "play" },
+    { url = "*.mp3", use = "play" },
+    { url = "*.m4a", use = "play" },
+    { url = "*.flac", use = "play" },
+]
+
+
