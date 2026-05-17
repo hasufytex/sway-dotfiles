@@ -28,9 +28,6 @@ for_window [class=".*"] border pixel 0
 # XDG autostart
 exec --no-startup-id dex --autostart --environment i3
 
-# NVIDIA performance mode
-exec --no-startup-id nvidia-settings -a "[gpu:0]/GPUPowerMizerMode=1"
-
 # Screen lock on suspend
 exec --no-startup-id xss-lock --transfer-sleep-lock -- i3lock --nofork
 
