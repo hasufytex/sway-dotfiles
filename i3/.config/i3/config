@@ -42,7 +42,7 @@ exec --no-startup-id xss-lock --transfer-sleep-lock -- i3lock --nofork
 # NetworkManager applet
 exec --no-startup-id nm-applet
 
-exec_always --no-startup-id /home/hasu/.cargo/bin/i3wsr --config ~/.config/i3wsr/config.toml
+exec_always --no-startup-id i3wsr
 
 # Use pactl to adjust volume in PulseAudio.
 set $refresh_i3status killall -SIGUSR1 i3status

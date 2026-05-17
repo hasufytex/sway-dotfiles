@@ -16,3 +16,4 @@ alias ls='ls --color=auto'
 alias ll='ls -lah'
 alias la='ls -A'
 alias grep='grep --color=auto'
+export PATH="$HOME/.local/bin:$PATH"
