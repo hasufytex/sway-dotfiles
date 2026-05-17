@@ -63,8 +63,8 @@ bindsym $mod+q exec kitty
 bindsym $mod+c kill
 bindsym $mod+m exec "i3-nagbar -t warning -m 'You pressed the exit shortcut. Do you really want to exit i3? This will end your X session.' -B 'Yes, exit i3' 'i3-msg exit'"
 bindsym $mod+e exec nautilus
-bindsym $mod+r exec --no-startup-id dmenu_run $dmenu_colors
-bindsym $mod+f exec --no-startup-id i3-dmenu-desktop --dmenu="dmenu -i $dmenu_colors"
+bindsym $mod+r exec --no-startup-id ~/.local/bin/dmenu_themed_run
+bindsym $mod+f exec --no-startup-id i3-dmenu-desktop --dmenu="~/.local/bin/dmenu_themed -i"
 bindsym $mod+space exec ~/.local/bin/toggle_kb_layout.sh
 bindsym $mod+Shift+t exec --no-startup-id ~/.local/bin/toggle_theme.sh
 

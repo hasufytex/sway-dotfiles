@@ -1,0 +1,10 @@
+#!/bin/bash
+STATE=$(cat "$HOME/.config/theme-state" 2>/dev/null || echo "dark")
+
+if [ "$STATE" = "dark" ]; then
+    NB="#1e1e1e"; NF="#d4d4d4"; SB="#264f78"; SF="#ffffff"
+else
+    NB="#f0f0f0"; NF="#333333"; SB="#4a90d9"; SF="#ffffff"
+fi
+
+exec dmenu "$@" -nb "$NB" -nf "$NF" -sb "$SB" -sf "$SF" -fn "monospace-14"
