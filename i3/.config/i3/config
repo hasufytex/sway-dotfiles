@@ -14,9 +14,6 @@ exec --no-startup-id export __GL_VRR_ALLOWED=1
 # Font rendering improvements
 exec --no-startup-id export FREETYPE_PROPERTIES="truetype:interpreter-version=35 cff:no-stem-darkening=1 autofitter:warping=1"
 
-# Disable mouse acceleration
-exec --no-startup-id ~/.config/i3/scripts/disable_mouse_accel.sh
-
 # Font for window titles
 font pango:monospace 14
 
