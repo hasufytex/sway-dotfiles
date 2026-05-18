@@ -1,14 +1,13 @@
-!/bin/bash
+#!/bin/bash
 
-# 1. Toggle Keyboard Layout
-# Since i3 uses X11, we use setxkbmap. 
-# This command toggles between US and your secondary layout (e.g., Bulgarian/German/etc.)
+# Toggle Layout and write to a file for i3status to read
 if setxkbmap -query | grep -q "layout:\s\+us"; then
-    setxkbmap bg  # Replace 'bg' with your other language code
+    setxkbmap -layout bg -variant phonetic
+    echo "BG" > /tmp/kb_layout
 else
-    setxkbmap us
+    setxkbmap -layout us -variant ""
+    echo "EN" > /tmp/kb_layout
 fi
 
-# 2. Refresh the Bar
-# If you are using i3status:
+# Refresh i3status immediately
 pkill -USR1 i3status

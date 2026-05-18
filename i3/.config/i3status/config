@@ -1,5 +1,5 @@
 general {
-        colors = true
+        colors = false
         interval = 1
         separator = "   "
 }
@@ -10,20 +10,28 @@ order += "memory"
 order += "tztime local"
 
 ethernet _first_ {
-        format_up = "   E: %ip (%speed)   "
+        format_up = "  %ip  "
         format_down = "   E: down   "
 }
 
 cpu_usage {
-        format = "   CPU: %usage   "
+        format = "  CPU: %usage  "
 }
 
 memory {
-        format = "   %used | %available   "
+        format = "  %used  "
         threshold_degraded = "1G"
         format_degraded = "MEMORY < %available"
 }
 
 tztime local {
-        format = "   %Y-%m-%d   %H:%M:%S   "
+        format = "  %Y-%m-%d  %H:%M:%S  "
+}
+
+order += "read_file layout"
+read_file layout {
+        format = "%content"
+        path = "/tmp/kb_layout"
+        format_bad = "EN"
+        color_good = "#FFFFFF"  # Forces the successful read to be white
 }
