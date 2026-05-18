@@ -1,0 +1,6 @@
+[options]
+# This tells i3wsr to ONLY use your custom alias if a match is found
+no_match_instance = true 
+
+[aliases.class]
+"dev.zed.Zed" = "zed"
