@@ -23,7 +23,7 @@ for_window [class=".*"] border pixel 0
 exec --no-startup-id dex --autostart --environment i3
 
 # Screen lock on suspend
-exec --no-startup-id xss-lock --transfer-sleep-lock -- i3lock --nofork
+exec --no-startup-id xss-lock --transfer-sleep-lock -- ~/.local/bin/i3lock_themed --nofork
 
 # NetworkManager applet
 # exec --no-startup-id nm-applet
@@ -87,7 +87,7 @@ bindsym $mod+t layout toggle split
 bindsym $mod+a focus parent
 bindsym $mod+Shift+minus move scratchpad
 bindsym $mod+minus scratchpad show
-bindsym $mod+l exec i3lock -c 000000
+bindsym $mod+l exec ~/.local/bin/i3lock_themed
 
 # ============================================================================
 # WORKSPACES

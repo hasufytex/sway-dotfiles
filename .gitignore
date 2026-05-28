@@ -2,3 +2,4 @@ scripts/.local/bin/claude
 i3/.config/i3/theme.conf
 kitty/.config/kitty/theme.conf
 kitty/.config/kitty/kitty.conf.bak
+yazi/.config/yazi/theme.toml
