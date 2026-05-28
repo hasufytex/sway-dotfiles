@@ -30,6 +30,10 @@ exec --no-startup-id xss-lock --transfer-sleep-lock -- i3lock --nofork
 
 exec_always --no-startup-id i3wsr
 
+# Compositor (transparency / fade) and theme apply (wallpaper, symlinks, env file)
+exec_always --no-startup-id picom --daemon
+exec_always --no-startup-id ~/.local/bin/toggle_theme.sh --apply
+
 # Volume keys
 set $refresh_i3status killall -SIGUSR1 i3status
 bindsym XF86AudioRaiseVolume exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ +10% && $refresh_i3status
