@@ -9,13 +9,16 @@ set -u
 
 STATE="$HOME/.config/theme-state"
 DOTFILES="$HOME/my-i3-dotfiles"
-WALLPAPER_DIR="$HOME/Pictures/wallpapers"
+# Single wallpaper used for both light and dark.
+WALLPAPER="$HOME/Downloads/1378545.jpg"
 
 CURRENT=$(cat "$STATE" 2>/dev/null || echo "dark")
 
 if [ "${1:-}" = "--apply" ]; then
+    APPLY=1
     NEW="$CURRENT"
 else
+    APPLY=0
     if [ "$CURRENT" = "dark" ]; then NEW="light"; else NEW="dark"; fi
     echo "$NEW" > "$STATE"
 fi
@@ -55,15 +58,26 @@ export FZF_DEFAULT_OPTS=" \
 EOF
 fi
 
-# 5. Wallpaper (accept any common extension)
-if command -v feh >/dev/null 2>&1; then
-    for ext in png jpg jpeg webp; do
-        wp="$WALLPAPER_DIR/catppuccin-${NEW}.${ext}"
-        if [ -f "$wp" ]; then
-            feh --no-fehbg --bg-fill "$wp"
-            break
-        fi
-    done
+# 5. Wallpaper (same image for both themes)
+if command -v feh >/dev/null 2>&1 && [ -f "$WALLPAPER" ]; then
+    feh --no-fehbg --bg-fill "$WALLPAPER"
+fi
+
+# 5b. picom i3bar opacity — match kitty's per-mode background_opacity.
+# i3bar is a depth-24 window so it can't do per-pixel alpha; picom must force it.
+# Kitty: 0.92 dark / 0.80 light  ->  i3bar 92 / 80.
+if [ "$NEW" = "dark" ]; then BAR_OPACITY=92; else BAR_OPACITY=80; fi
+PICOM_DIR="$HOME/.config/picom"
+mkdir -p "$PICOM_DIR"
+cat > "$PICOM_DIR/opacity.conf" <<EOF
+opacity-rule = [
+  "${BAR_OPACITY}:class_g = 'i3bar'"
+];
+EOF
+if command -v picom >/dev/null 2>&1; then
+    pkill -x picom 2>/dev/null
+    sleep 0.3
+    picom --config "$PICOM_DIR/picom.conf" --daemon 2>/dev/null || true
 fi
 
 # 6. GTK — Catppuccin libadwaita/GTK4 + GTK3 overrides
@@ -138,14 +152,19 @@ if [ -f "$CLAUDE_SETTINGS" ]; then
     sed -i -E "s/\"theme\": \"(dark|light)(-ansi|-daltonized)?\"/\"theme\": \"${NEW}-ansi\"/" "$CLAUDE_SETTINGS"
 fi
 
-# 7. Reload i3 (idempotent)
-i3-msg reload >/dev/null 2>&1 || true
+# 7. Reload i3 to repaint the bar — only on an interactive toggle.
+# At startup (--apply) i3 already loaded the right theme.conf, and reloading
+# would re-fire exec_always (including this script), clobbering the wallpaper.
+if [ "$APPLY" -eq 0 ]; then
+    i3-msg reload >/dev/null 2>&1 || true
+fi
 
 # 8. Signal kitty to re-read theme.conf
 kill -SIGUSR1 $(pidof kitty) 2>/dev/null || true
 
 # 9. Quit nautilus daemon so the next launch picks up the new gtk.css
-if pgrep -x nautilus >/dev/null 2>&1; then
+# (skip on startup — nothing's open yet, and -q would race the daemon)
+if [ "$APPLY" -eq 0 ] && pgrep -x nautilus >/dev/null 2>&1; then
     nautilus -q 2>/dev/null || true
 fi
 

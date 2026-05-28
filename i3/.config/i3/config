@@ -30,8 +30,8 @@ exec --no-startup-id xss-lock --transfer-sleep-lock -- ~/.local/bin/i3lock_theme
 
 exec_always --no-startup-id i3wsr
 
-# Compositor (transparency / fade) and theme apply (wallpaper, symlinks, env file)
-exec_always --no-startup-id picom --daemon
+# Theme apply also starts picom (it generates picom's per-theme opacity.conf
+# first, so picom must not be launched separately before this runs).
 exec_always --no-startup-id ~/.local/bin/toggle_theme.sh --apply
 
 # Volume keys
