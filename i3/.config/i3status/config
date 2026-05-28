@@ -7,6 +7,7 @@ general {
 order += "ethernet _first_"
 order += "cpu_usage"
 order += "memory"
+order += "read_file audio_mode"
 order += "tztime local"
 
 ethernet _first_ {
@@ -26,6 +27,13 @@ memory {
 
 tztime local {
         format = "  %Y-%m-%d  %H:%M:%S  "
+}
+
+read_file audio_mode {
+        format = "%content"
+        path = "/tmp/sone_audio_mode"
+        format_bad = "Audio: S"
+        color_good = "#FFFFFF"
 }
 
 order += "read_file layout"
