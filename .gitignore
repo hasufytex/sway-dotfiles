@@ -4,3 +4,4 @@ kitty/.config/kitty/theme.conf
 kitty/.config/kitty/kitty.conf.bak
 yazi/.config/yazi/theme.toml
 picom/.config/picom/opacity.conf
+eww/.config/eww/eww.scss

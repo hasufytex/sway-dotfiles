@@ -27,6 +27,13 @@ fi
 ln -sf "$DOTFILES/i3/.config/i3/theme-${NEW}.conf" \
        "$DOTFILES/i3/.config/i3/theme.conf"
 
+# 1b. eww theme symlink + restart
+ln -sf "$HOME/.config/eww/theme-${NEW}.scss" \
+       "$HOME/.config/eww/eww.scss"
+if [ "$APPLY" -eq 0 ]; then
+    ~/.local/bin/eww-bar &
+fi
+
 # 2. kitty theme symlink
 ln -sf "$DOTFILES/kitty/.config/kitty/theme-${NEW}.conf" \
        "$DOTFILES/kitty/.config/kitty/theme.conf"
@@ -66,12 +73,12 @@ fi
 # 5b. picom i3bar opacity — match kitty's per-mode background_opacity.
 # i3bar is a depth-24 window so it can't do per-pixel alpha; picom must force it.
 # Kitty: 0.92 dark / 0.80 light  ->  i3bar 92 / 80.
-if [ "$NEW" = "dark" ]; then BAR_OPACITY=92; else BAR_OPACITY=80; fi
+if [ "$NEW" = "dark" ]; then EWW_OPACITY=92; else EWW_OPACITY=80; fi
 PICOM_DIR="$HOME/.config/picom"
 mkdir -p "$PICOM_DIR"
 cat > "$PICOM_DIR/opacity.conf" <<EOF
 opacity-rule = [
-  "${BAR_OPACITY}:class_g = 'i3bar'"
+  "${EWW_OPACITY}:class_g = 'Eww'"
 ];
 EOF
 if command -v picom >/dev/null 2>&1; then

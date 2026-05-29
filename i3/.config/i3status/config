@@ -32,14 +32,14 @@ tztime local {
 read_file audio_mode {
         format = "%content"
         path = "/tmp/sone_audio_mode"
-        format_bad = "Audio: S"
+        format_bad = "  Audio: S  "
         color_good = "#FFFFFF"
 }
 
 order += "read_file layout"
 read_file layout {
-        format = "%content"
+        format = "  %content  "
         path = "/tmp/kb_layout"
-        format_bad = "EN"
+        format_bad = " EN "
         color_good = "#FFFFFF"  # Forces the successful read to be white
 }

@@ -9,10 +9,10 @@ exec --no-startup-id export XDG_SESSION_TYPE=x11
 # NVIDIA-specific environment variables
 exec --no-startup-id export LIBVA_DRIVER_NAME=nvidia
 exec --no-startup-id export __GLX_VENDOR_LIBRARY_NAME=nvidia
-exec --no-startup-id export __GL_VRR_ALLOWED=1
+exec --no-startup-id export __GL_VRR_ALLOWED=0
 
 # Font for window titles
-font pango:monospace 14
+font pango:monospace 16
 
 # Disable window title bars
 default_border pixel 0
@@ -28,7 +28,7 @@ exec --no-startup-id xss-lock --transfer-sleep-lock -- ~/.local/bin/i3lock_theme
 # NetworkManager applet
 # exec --no-startup-id nm-applet
 
-exec_always --no-startup-id i3wsr
+exec_always --no-startup-id ~/.local/bin/eww-bar
 
 # Theme apply also starts picom (it generates picom's per-theme opacity.conf
 # first, so picom must not be launched separately before this runs).
@@ -93,16 +93,16 @@ bindsym $mod+l exec ~/.local/bin/i3lock_themed
 # WORKSPACES
 # ============================================================================
 
-set $ws1 "1:"
-set $ws2 "2:"
-set $ws3 "3:"
-set $ws4 "4:"
-set $ws5 "5:"
-set $ws6 "6:"
-set $ws7 "7:"
-set $ws8 "8:"
-set $ws9 "9:"
-set $ws10 "10:"
+set $ws1 "1"
+set $ws2 "2"
+set $ws3 "3"
+set $ws4 "4"
+set $ws5 "5"
+set $ws6 "6"
+set $ws7 "7"
+set $ws8 "8"
+set $ws9 "9"
+set $ws10 "10"
 
 bindsym $mod+1 workspace number $ws1
 bindsym $mod+2 workspace number $ws2
@@ -141,4 +141,4 @@ mode "resize" {
 
 bindsym $mod+Ctrl+r mode "resize"
 
-exec_always --no-startup-id xrandr --output DP-4 --mode 2560x1440 --rate 144.01
+exec_always --no-startup-id xrandr --output DP-4 --mode 2560x1440 --rate 170.02

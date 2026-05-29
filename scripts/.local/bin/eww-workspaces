@@ -1,0 +1,81 @@
+#!/usr/bin/env python3
+"""
+One-shot: query i3 state and print one JSON line. eww polls this every 0.5s.
+"""
+import subprocess, json, os
+
+ICON_MAP = {
+    "firefox":            "/usr/share/icons/hicolor/48x48/apps/firefox.png",
+    "kitty":              "/usr/share/icons/hicolor/256x256/apps/kitty.png",
+    "discord":            "/usr/share/icons/hicolor/256x256/apps/discord.png",
+    "dev.zed.zed":        "/usr/share/icons/hicolor/512x512/apps/zed.png",
+    "nautilus":           "/usr/share/icons/hicolor/scalable/apps/org.gnome.Nautilus.svg",
+    "org.gnome.nautilus": "/usr/share/icons/hicolor/scalable/apps/org.gnome.Nautilus.svg",
+}
+
+ICON_SIZES = ["48x48", "32x32", "64x64", "128x128", "256x256", "512x512", "scalable"]
+
+
+def find_icon(wm_class):
+    key = wm_class.lower()
+    if key in ICON_MAP:
+        return ICON_MAP[key]
+    for sz in ICON_SIZES:
+        for ext in ["png", "svg"]:
+            p = f"/usr/share/icons/hicolor/{sz}/apps/{key}.{ext}"
+            if os.path.exists(p):
+                return p
+    for ext in ["png", "svg", "xpm"]:
+        p = f"/usr/share/pixmaps/{key}.{ext}"
+        if os.path.exists(p):
+            return p
+    return None
+
+
+def get_leaves(node):
+    if node.get("window"):
+        yield node
+    for child in node.get("nodes", []) + node.get("floating_nodes", []):
+        yield from get_leaves(child)
+
+
+def build_ws_windows(tree):
+    result = {}
+    for output in tree.get("nodes", []):
+        for container in output.get("nodes", []):
+            if container.get("name") == "content":
+                for ws_node in container.get("nodes", []):
+                    name = ws_node.get("name", "")
+                    classes = []
+                    for leaf in get_leaves(ws_node):
+                        cls = (leaf.get("window_properties") or {}).get("class") or ""
+                        if cls:
+                            classes.append(cls)
+                    result[name] = classes
+    return result
+
+
+ws_raw   = subprocess.run(["i3-msg", "-t", "get_workspaces"], capture_output=True).stdout
+tree_raw = subprocess.run(["i3-msg", "-t", "get_tree"],       capture_output=True).stdout
+workspaces = json.loads(ws_raw)
+tree       = json.loads(tree_raw)
+
+ws_windows = build_ws_windows(tree)
+
+out = []
+for ws in sorted(workspaces, key=lambda w: w["num"]):
+    classes = ws_windows.get(ws["name"], [])
+    icons, seen = [], set()
+    for cls in classes:
+        icon = find_icon(cls)
+        if icon and icon not in seen:
+            icons.append(icon)
+            seen.add(icon)
+    out.append({
+        "num":     ws["num"],
+        "focused": ws["focused"],
+        "urgent":  ws.get("urgent", False),
+        "icons":   icons,
+    })
+
+print(json.dumps(out), flush=True)

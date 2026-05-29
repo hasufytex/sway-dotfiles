@@ -1,0 +1,73 @@
+; ============================================================
+; Data sources
+; ============================================================
+
+(defpoll workspaces :interval "0.2s" :initial "[]"
+  "~/.local/bin/eww-workspaces")
+
+(defpoll network :interval "3s"
+  "ip -4 addr show | grep -oP '(?<=inet )\\d+\\.\\d+\\.\\d+\\.\\d+' | grep -v 127 | head -1 || echo 'E: down'")
+
+(defpoll cpu :interval "2s"
+  "grep 'cpu ' /proc/stat | awk '{u=($2+$4)*100/($2+$4+$5)} END {printf \"CPU: %.0f%%\",u}'")
+
+(defpoll memory :interval "3s"
+  "awk '/MemTotal/{t=$2}/MemAvailable/{a=$2}END{printf \"%.1fG\",(t-a)/1048576}' /proc/meminfo")
+
+(defpoll audio :interval "1s"
+  "cat /tmp/sone_audio_mode 2>/dev/null || echo 'Audio: S'")
+
+(defpoll datetime :interval "1s"
+  "date '+%Y-%m-%d  %H:%M:%S'")
+
+(defpoll lang :interval "1s"
+  "cat /tmp/kb_layout 2>/dev/null || echo 'EN'")
+
+; ============================================================
+; Workspace widget
+; ============================================================
+
+(defwidget workspace-btn [ws]
+  (button
+    :class "workspace ${ws.focused ? "focused" : ""} ${ws.urgent ? "urgent" : ""}"
+    :onclick "i3-msg workspace number ${ws.num}"
+    (box :orientation "h" :space-evenly false :spacing 3 :valign "center"
+      {arraylength(ws.icons) == 0 ? "${ws.num}" : ""}
+      (for icon in {ws.icons}
+        (image :path icon :image-width 22 :image-height 22)))))
+
+(defwidget workspaces []
+  (box :orientation "h" :space-evenly false :spacing 2 :class "workspaces"
+    (for ws in workspaces
+      (workspace-btn :ws ws))))
+
+; ============================================================
+; Right-side modules
+; ============================================================
+
+(defwidget right-modules []
+  (box :orientation "h" :space-evenly false :spacing 0 :class "right-modules" :halign "end"
+    (label :class "module" :text network)
+    (label :class "module" :text cpu)
+    (label :class "module" :text memory)
+    (label :class "module" :text audio)
+    (label :class "module" :text datetime)
+    (label :class "module" :text lang)))
+
+; ============================================================
+; Bar window
+; ============================================================
+
+(defwidget bar-widget []
+  (centerbox :orientation "h" :class "bar"
+    (workspaces)
+    (box)
+    (right-modules)))
+
+(defwindow bar
+  :monitor 0
+  :geometry (geometry :x "0" :y "0" :width "100%" :height "36px" :anchor "top center")
+  :stacking "fg"
+  :exclusive true
+  :windowtype "dock"
+  (bar-widget))
