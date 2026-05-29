@@ -9,7 +9,7 @@
   "ip -4 addr show | grep -oP '(?<=inet )\\d+\\.\\d+\\.\\d+\\.\\d+' | grep -v 127 | head -1 || echo 'E: down'")
 
 (defpoll cpu :interval "2s"
-  "grep 'cpu ' /proc/stat | awk '{u=($2+$4)*100/($2+$4+$5)} END {printf \"CPU: %.0f%%\",u}'")
+  "~/.local/bin/eww-cpu")
 
 (defpoll memory :interval "3s"
   "awk '/MemTotal/{t=$2}/MemAvailable/{a=$2}END{printf \"%.1fG\",(t-a)/1048576}' /proc/meminfo")
