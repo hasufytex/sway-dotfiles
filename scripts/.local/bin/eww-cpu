@@ -1,5 +1,5 @@
 #!/bin/bash
-# Two-snapshot delta read from /proc/stat for accurate current CPU%.
+# Reports current CPU% using delta between two /proc/stat snapshots.
 PREV=/tmp/eww-cpu-prev
 CURR=$(grep '^cpu ' /proc/stat | head -1)
 

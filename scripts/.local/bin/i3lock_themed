@@ -1,19 +1,17 @@
 #!/bin/bash
-# Theme-aware i3lock-color wrapper.
-# Background is the live screen blurred; ring + text follow Catppuccin
-# Mocha/Latte based on ~/.config/theme-state.
+# Theme-aware i3lock-color wrapper with blurred background and Catppuccin ring colors.
 STATE=$(cat "$HOME/.config/theme-state" 2>/dev/null || echo "dark")
 
 if [ "$STATE" = "dark" ]; then
     BG="1e1e2eb3"
-    INSIDE="00000000"      # transparent — only ring shows
-    RING="89b4faff"        # blue (idle)
-    KEYHL="cba6f7ff"       # mauve (keypress)
-    BSHL="f38ba8ff"        # red (backspace)
+    INSIDE="00000000"
+    RING="89b4faff"
+    KEYHL="cba6f7ff"
+    BSHL="f38ba8ff"
     INSIDEVER="00000000"
-    RINGVER="f9e2afff"     # yellow (verifying)
+    RINGVER="f9e2afff"
     INSIDEWRONG="00000000"
-    RINGWRONG="f38ba8ff"   # red (wrong)
+    RINGWRONG="f38ba8ff"
     SEP="00000000"
     LINE="00000000"
     TIME="cdd6f4ff"
@@ -38,7 +36,6 @@ else
     WRONG="d20f39ff"
 fi
 
-# Fall back to plain i3lock if i3lock-color isn't installed
 if ! i3lock --version 2>&1 | grep -q "Cassandra Fox"; then
     exec i3lock -c "${BG:0:6}" "$@"
 fi

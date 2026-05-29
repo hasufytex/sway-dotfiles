@@ -1,2 +1,3 @@
 #!/bin/bash
+# Runs the system PATH through dmenu_themed for application launching.
 dmenu_path | ~/.local/bin/dmenu_themed | ${SHELL:-/bin/sh} &

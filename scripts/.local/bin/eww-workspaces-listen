@@ -1,11 +1,8 @@
 #!/usr/bin/env python3
-"""
-Long-running daemon for eww deflisten. Connects to i3 IPC via $I3SOCK,
-subscribes to workspace+window events, emits one JSON line per change.
-"""
+# eww deflisten daemon: connects to i3 IPC, emits workspace+icon JSON on each change.
 import json, os, socket, struct, sys
 
-MAGIC      = b'i3-ipc'
+MAGIC        = b'i3-ipc'
 T_WORKSPACES = 1
 T_TREE       = 4
 T_SUBSCRIBE  = 2
@@ -131,7 +128,7 @@ emit()
 
 sub = connect()
 send(sub, T_SUBSCRIBE, '["workspace","window"]')
-recv(sub)  # consume {"success":true}
+recv(sub)
 
 while True:
     try:

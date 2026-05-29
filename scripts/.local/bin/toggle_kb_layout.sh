@@ -1,6 +1,5 @@
 #!/bin/bash
-
-# Toggle Layout and write to a file for i3status to read
+# Toggles keyboard layout between US and BG Phonetic, writes state to /tmp/kb_layout.
 if setxkbmap -query | grep -q "layout:\s\+us"; then
     setxkbmap -layout bg -variant phonetic
     echo "BG" > /tmp/kb_layout
@@ -9,5 +8,4 @@ else
     echo "EN" > /tmp/kb_layout
 fi
 
-# Refresh i3status immediately
 pkill -USR1 i3status

@@ -1,4 +1,5 @@
 #!/bin/bash
+# Kills any existing eww instance and starts the bar.
 eww kill 2>/dev/null
 sleep 0.5
 eww daemon &

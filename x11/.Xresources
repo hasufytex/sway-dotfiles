@@ -1,13 +1,12 @@
+! FreeType rendering and dmenu colors (Catppuccin Mocha).
 Xft.antialias: 1
 Xft.hinting: 1
 Xft.hintstyle: hintslight
 Xft.rgba: rgb
 Xft.lcdfilter: lcddefault
 
-! dmenu colors - dark theme matching i3
 dmenu.background: #1e1e1e
 dmenu.foreground: #d4d4d4
 dmenu.selbackground: #264f78
 dmenu.selforeground: #ffffff
-! Font
 dmenu.font: monospace:size=14

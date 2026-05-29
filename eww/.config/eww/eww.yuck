@@ -1,6 +1,4 @@
-; ============================================================
-; Data sources
-; ============================================================
+; eww bar: workspaces with app icons on the left, status modules on the right.
 
 (deflisten workspaces :initial "[]"
   "~/.local/bin/eww-workspaces-listen")
@@ -23,10 +21,6 @@
 (defpoll lang :interval "1s"
   "cat /tmp/kb_layout 2>/dev/null || echo 'EN'")
 
-; ============================================================
-; Workspace widget
-; ============================================================
-
 (defwidget workspace-btn [ws]
   (button
     :class "workspace ${ws.focused ? "focused" : ""} ${ws.urgent ? "urgent" : ""}"
@@ -41,10 +35,6 @@
     (for ws in workspaces
       (workspace-btn :ws ws))))
 
-; ============================================================
-; Right-side modules
-; ============================================================
-
 (defwidget right-modules []
   (box :orientation "h" :space-evenly false :spacing 0 :class "right-modules" :halign "end"
     (label :class "module" :text network)
@@ -53,10 +43,6 @@
     (label :class "module" :text audio)
     (label :class "module" :text datetime)
     (label :class "module" :text lang)))
-
-; ============================================================
-; Bar window
-; ============================================================
 
 (defwidget bar-widget []
   (centerbox :orientation "h" :class "bar"

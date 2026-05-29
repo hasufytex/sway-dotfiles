@@ -1,15 +1,10 @@
 #!/bin/bash
-# Unified dark/light toggle. Flips ~/.config/theme-state, then re-asserts every
-# theme-aware tool (i3, kitty, yazi, fzf/bat env, wallpaper, GTK).
-#
-# Usage:
-#   toggle_theme.sh           flip dark<->light and apply
-#   toggle_theme.sh --apply   re-apply current state without flipping (used by i3 autostart)
+# Dark/light theme toggle: i3, eww, kitty, yazi, picom, GTK, fzf/bat, Claude Code.
+# Usage: toggle_theme.sh [--apply]  (--apply re-applies without flipping)
 set -u
 
 STATE="$HOME/.config/theme-state"
 DOTFILES="$HOME/my-i3-dotfiles"
-# Single wallpaper used for both light and dark.
 WALLPAPER="$HOME/Downloads/1378545.jpg"
 
 CURRENT=$(cat "$STATE" 2>/dev/null || echo "dark")
@@ -23,26 +18,21 @@ else
     echo "$NEW" > "$STATE"
 fi
 
-# 1. i3 theme symlink
 ln -sf "$DOTFILES/i3/.config/i3/theme-${NEW}.conf" \
        "$DOTFILES/i3/.config/i3/theme.conf"
 
-# 1b. eww theme symlink + restart
 ln -sf "$HOME/.config/eww/theme-${NEW}.scss" \
        "$HOME/.config/eww/eww.scss"
 if [ "$APPLY" -eq 0 ]; then
     ~/.local/bin/eww-bar &
 fi
 
-# 2. kitty theme symlink
 ln -sf "$DOTFILES/kitty/.config/kitty/theme-${NEW}.conf" \
        "$DOTFILES/kitty/.config/kitty/theme.conf"
 
-# 3. yazi theme symlink
 ln -sf "$DOTFILES/yazi/.config/yazi/theme-${NEW}.toml" \
        "$DOTFILES/yazi/.config/yazi/theme.toml"
 
-# 4. fzf + bat env file (sourced by ~/.zshrc; new shells pick it up automatically)
 if [ "$NEW" = "dark" ]; then
     cat > "$HOME/.config/theme-colors.sh" <<'EOF'
 export BAT_THEME="Catppuccin Mocha"
@@ -65,12 +55,10 @@ export FZF_DEFAULT_OPTS=" \
 EOF
 fi
 
-# 5. Wallpaper (same image for both themes)
 if command -v feh >/dev/null 2>&1 && [ -f "$WALLPAPER" ]; then
     feh --no-fehbg --bg-fill "$WALLPAPER"
 fi
 
-# 5b. picom i3bar opacity — match kitty's per-mode background_opacity.
 if [ "$NEW" = "dark" ]; then EWW_OPACITY=82; else EWW_OPACITY=75; fi
 PICOM_DIR="$HOME/.config/picom"
 mkdir -p "$PICOM_DIR"
@@ -85,7 +73,6 @@ if command -v picom >/dev/null 2>&1; then
     picom --config "$PICOM_DIR/picom.conf" --daemon 2>/dev/null || true
 fi
 
-# 6. GTK — Catppuccin libadwaita/GTK4 + GTK3 overrides
 mkdir -p "$HOME/.config/gtk-4.0" "$HOME/.config/gtk-3.0"
 if [ "$NEW" = "dark" ]; then
     BASE="#1e1e2e"; MANTLE="#181825"; CRUST="#11111b"
@@ -101,7 +88,6 @@ else
     DESTRUCT="#d20f39"; SUCCESS="#40a02b"; WARN="#df8e1d"
 fi
 cat > "$HOME/.config/gtk-4.0/gtk.css" <<EOF
-/* Catppuccin (${NEW}) — named colors + explicit selectors */
 @define-color accent_color             ${ACCENT};
 @define-color accent_bg_color          ${ACCENT};
 @define-color accent_fg_color          ${ACCENT_FG};
@@ -132,7 +118,6 @@ cat > "$HOME/.config/gtk-4.0/gtk.css" <<EOF
 @define-color thumbnail_bg_color       ${SURF0};
 @define-color thumbnail_fg_color       ${TEXT};
 
-/* Explicit overrides — these bypass libadwaita's mode-switching of named colors */
 window, .background { background-color: ${BASE}; color: ${TEXT}; }
 headerbar, .titlebar { background-color: ${CRUST}; color: ${TEXT}; }
 .sidebar, placessidebar, placessidebar list { background-color: ${MANTLE}; color: ${TEXT}; }
@@ -151,27 +136,17 @@ else
     gsettings set org.gnome.desktop.interface gtk-theme 'Adwaita' 2>/dev/null || true
 fi
 
-# 6b. Claude Code theme (inherits kitty's Catppuccin palette via *-ansi variants)
 CLAUDE_SETTINGS="$HOME/.claude/settings.json"
 if [ -f "$CLAUDE_SETTINGS" ]; then
     sed -i -E "s/\"theme\": \"(dark|light)(-ansi|-daltonized)?\"/\"theme\": \"${NEW}-ansi\"/" "$CLAUDE_SETTINGS"
 fi
 
-# 7. Reload i3 to repaint the bar — only on an interactive toggle.
-# At startup (--apply) i3 already loaded the right theme.conf, and reloading
-# would re-fire exec_always (including this script), clobbering the wallpaper.
 if [ "$APPLY" -eq 0 ]; then
     i3-msg reload >/dev/null 2>&1 || true
 fi
 
-# 8. Signal kitty to re-read theme.conf
 kill -SIGUSR1 $(pidof kitty) 2>/dev/null || true
 
-# 9. Quit nautilus daemon so the next launch picks up the new gtk.css
-# (skip on startup — nothing's open yet, and -q would race the daemon)
 if [ "$APPLY" -eq 0 ] && pgrep -x nautilus >/dev/null 2>&1; then
     nautilus -q 2>/dev/null || true
 fi
-
-# nvim picks up the change via fs_event watcher on $STATE (see nvim plugins/colorscheme.lua).
-# picom is theme-agnostic; not restarted.

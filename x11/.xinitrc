@@ -1,5 +1,5 @@
 #!/bin/sh
-# Start i3
+# X11 session init: sets NVIDIA env vars and launches i3.
 export XDG_SESSION_TYPE=x11
 export XDG_CURRENT_DESKTOP=i3
 export LIBVA_DRIVER_NAME=nvidia
