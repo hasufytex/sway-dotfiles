@@ -70,5 +70,4 @@
   :stacking "fg"
   :exclusive true
   :windowtype "dock"
-  :transparent true
   (bar-widget))

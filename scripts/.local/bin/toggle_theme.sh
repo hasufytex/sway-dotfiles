@@ -71,10 +71,13 @@ if command -v feh >/dev/null 2>&1 && [ -f "$WALLPAPER" ]; then
 fi
 
 # 5b. picom i3bar opacity — match kitty's per-mode background_opacity.
+if [ "$NEW" = "dark" ]; then EWW_OPACITY=82; else EWW_OPACITY=75; fi
 PICOM_DIR="$HOME/.config/picom"
 mkdir -p "$PICOM_DIR"
 cat > "$PICOM_DIR/opacity.conf" <<EOF
-opacity-rule = [];
+opacity-rule = [
+  "${EWW_OPACITY}:class_g = 'Eww'"
+];
 EOF
 if command -v picom >/dev/null 2>&1; then
     pkill -x picom 2>/dev/null
