@@ -1,7 +1,7 @@
 * {
-  font-family: "JetBrainsMono Nerd Font";
-  font-size: 13px;
   all: unset;
+  font-family: "JetBrainsMono Nerd Font";
+  font-size: 20px;
 }
 
 .bar {
@@ -28,6 +28,14 @@
     background-color: #d20f39;
     color: #eff1f5;
   }
+}
+
+.ws-num {
+  color: #9ca0b0;
+}
+
+.workspace.focused .ws-num {
+  color: #eff1f5;
 }
 
 .right-modules {

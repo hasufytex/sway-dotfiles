@@ -11,6 +11,7 @@ ICON_MAP = {
     "dev.zed.zed":        "/usr/share/icons/hicolor/512x512/apps/zed.png",
     "nautilus":           "/usr/share/icons/hicolor/scalable/apps/org.gnome.Nautilus.svg",
     "org.gnome.nautilus": "/usr/share/icons/hicolor/scalable/apps/org.gnome.Nautilus.svg",
+    "sone":               "/usr/share/icons/hicolor/128x128/apps/io.github.lullabyX.sone.png",
 }
 
 ICON_SIZES = ["48x48", "32x32", "64x64", "128x128", "256x256", "512x512", "scalable"]

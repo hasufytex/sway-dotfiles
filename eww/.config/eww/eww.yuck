@@ -2,8 +2,8 @@
 ; Data sources
 ; ============================================================
 
-(defpoll workspaces :interval "0.2s" :initial "[]"
-  "~/.local/bin/eww-workspaces")
+(deflisten workspaces :initial "[]"
+  "~/.local/bin/eww-workspaces-listen")
 
 (defpoll network :interval "3s"
   "ip -4 addr show | grep -oP '(?<=inet )\\d+\\.\\d+\\.\\d+\\.\\d+' | grep -v 127 | head -1 || echo 'E: down'")
@@ -32,7 +32,7 @@
     :class "workspace ${ws.focused ? "focused" : ""} ${ws.urgent ? "urgent" : ""}"
     :onclick "i3-msg workspace number ${ws.num}"
     (box :orientation "h" :space-evenly false :spacing 3 :valign "center"
-      {arraylength(ws.icons) == 0 ? "${ws.num}" : ""}
+      (label :class "ws-num" :text "${ws.num}:")
       (for icon in {ws.icons}
         (image :path icon :image-width 22 :image-height 22)))))
 
