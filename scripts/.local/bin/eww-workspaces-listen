@@ -41,7 +41,7 @@ def connect():
 
 def send(sock, msg_type, payload=""):
     data = payload.encode() if isinstance(payload, str) else payload
-    sock.sendall(MAGIC + struct.pack("II", len(data), msg_type) + data)
+    sock.sendall(MAGIC + struct.pack("<II", len(data), msg_type) + data)
 
 
 def recv(sock):
@@ -51,7 +51,7 @@ def recv(sock):
         if not chunk:
             raise ConnectionError("i3 socket closed")
         hdr += chunk
-    _, length, msg_type = struct.unpack("6sII", hdr)
+    _, length, msg_type = struct.unpack("<6sII", hdr)
     body = b""
     while len(body) < length:
         chunk = sock.recv(length - len(body))
