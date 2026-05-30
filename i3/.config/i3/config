@@ -6,7 +6,6 @@ exec --no-startup-id export DISPLAY=:0
 exec --no-startup-id export XDG_SESSION_TYPE=x11
 exec --no-startup-id export LIBVA_DRIVER_NAME=nvidia
 exec --no-startup-id export __GLX_VENDOR_LIBRARY_NAME=nvidia
-exec --no-startup-id export __GL_VRR_ALLOWED=0
 
 font pango:monospace 16
 
