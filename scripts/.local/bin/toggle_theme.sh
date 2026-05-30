@@ -1,5 +1,5 @@
 #!/bin/bash
-# Dark/light theme toggle: i3, eww, kitty, yazi, picom, GTK, fzf/bat, Claude Code.
+# Dark/light theme toggle: i3, eww, kitty, yazi, GTK, fzf/bat, Claude Code.
 # Usage: toggle_theme.sh [--apply]  (--apply re-applies without flipping)
 set -u
 
@@ -57,20 +57,6 @@ fi
 
 if command -v feh >/dev/null 2>&1 && [ -f "$WALLPAPER" ]; then
     feh --no-fehbg --bg-fill "$WALLPAPER"
-fi
-
-if [ "$NEW" = "dark" ]; then EWW_OPACITY=82; else EWW_OPACITY=75; fi
-PICOM_DIR="$HOME/.config/picom"
-mkdir -p "$PICOM_DIR"
-cat > "$PICOM_DIR/opacity.conf" <<EOF
-opacity-rule = [
-  "${EWW_OPACITY}:class_g = 'Eww'"
-];
-EOF
-if command -v picom >/dev/null 2>&1; then
-    pkill -x picom 2>/dev/null
-    sleep 0.3
-    picom --config "$PICOM_DIR/picom.conf" --daemon 2>/dev/null || true
 fi
 
 mkdir -p "$HOME/.config/gtk-4.0" "$HOME/.config/gtk-3.0"

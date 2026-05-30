@@ -1,14 +1,13 @@
 # Packages required by this dotfiles repo (Arch)
 
 ```
-sudo pacman -S fzf bat picom feh
+sudo pacman -S fzf bat feh
 ```
 
 | Package | Used for |
 |---|---|
 | `fzf` | Terminal fuzzy finder. Ctrl-T / Ctrl-R / Alt-C in zsh via `/usr/share/fzf/key-bindings.zsh`. |
 | `bat` | Syntax-highlighted `cat`. `BAT_THEME` follows the dark/light toggle via `~/.config/theme-colors.sh`. |
-| `picom` | X11 compositor — required for kitty `background_opacity 0.92` and window fading. |
 | `feh` | Sets the desktop wallpaper from `~/Pictures/wallpapers/catppuccin-{mocha,latte}.png`. |
 
 Optional, AUR:
@@ -25,7 +24,6 @@ For bat syntax highlighting in the matching palette, drop the official Catppucci
 
 ```
 cd ~/my-i3-dotfiles
-stow picom            # symlinks ~/.config/picom/picom.conf
 ```
 
 (All other stow packages — `i3`, `kitty`, `nvim`, `yazi`, `zsh`, `system-env`, `pipewire` — were already in place.)
