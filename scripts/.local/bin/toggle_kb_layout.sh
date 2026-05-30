@@ -7,5 +7,3 @@ else
     setxkbmap -layout us -variant ""
     echo "EN" > /tmp/kb_layout
 fi
-
-pkill -USR1 i3status
