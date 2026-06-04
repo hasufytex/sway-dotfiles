@@ -1,5 +1,5 @@
 #!/bin/bash
-# Dark/light theme toggle: i3, eww, kitty, yazi, GTK, fzf/bat, Claude Code.
+# Dark/light theme toggle: sway, eww, kitty, yazi, GTK, fzf/bat, Claude Code.
 # Usage: toggle_theme.sh [--apply]  (--apply re-applies without flipping)
 set -u
 
@@ -17,9 +17,6 @@ else
     if [ "$CURRENT" = "dark" ]; then NEW="light"; else NEW="dark"; fi
     echo "$NEW" > "$STATE"
 fi
-
-ln -sf "$DOTFILES/i3/.config/i3/theme-${NEW}.conf" \
-       "$DOTFILES/i3/.config/i3/theme.conf"
 
 ln -sf "$DOTFILES/sway/.config/sway/theme-${NEW}.conf" \
        "$DOTFILES/sway/.config/sway/theme.conf"
@@ -59,11 +56,7 @@ EOF
 fi
 
 if [ -f "$WALLPAPER" ]; then
-    if [ -n "${SWAYSOCK:-}" ]; then
-        swaymsg output "*" bg "$WALLPAPER" fill >/dev/null 2>&1 || true
-    elif command -v feh >/dev/null 2>&1; then
-        feh --no-fehbg --bg-fill "$WALLPAPER"
-    fi
+    swaymsg output "*" bg "$WALLPAPER" fill >/dev/null 2>&1 || true
 fi
 
 mkdir -p "$HOME/.config/gtk-4.0" "$HOME/.config/gtk-3.0"
@@ -135,11 +128,7 @@ if [ -f "$CLAUDE_SETTINGS" ]; then
 fi
 
 if [ "$APPLY" -eq 0 ]; then
-    if [ -n "${SWAYSOCK:-}" ]; then
-        swaymsg reload >/dev/null 2>&1 || true
-    else
-        i3-msg reload >/dev/null 2>&1 || true
-    fi
+    swaymsg reload >/dev/null 2>&1 || true
 fi
 
 kill -SIGUSR1 $(pidof kitty) 2>/dev/null || true
