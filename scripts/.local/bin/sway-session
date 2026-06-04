@@ -1,0 +1,17 @@
+#!/bin/sh
+# Launch sway on NVIDIA with Wayland env. Run from a TTY: sway-session
+export XDG_SESSION_TYPE=wayland
+export XDG_CURRENT_DESKTOP=sway
+export GBM_BACKEND=nvidia-drm
+export __GLX_VENDOR_LIBRARY_NAME=nvidia
+export LIBVA_DRIVER_NAME=nvidia
+export __GL_GSYNC_ALLOWED=1
+export __GL_VRR_ALLOWED=1
+export __GL_SYNC_TO_VBLANK=0
+export MOZ_ENABLE_WAYLAND=1
+export QT_QPA_PLATFORM="wayland;xcb"
+export SDL_VIDEODRIVER=wayland
+export _JAVA_AWT_WM_NONREPARENTING=1
+export ELECTRON_OZONE_PLATFORM_HINT=auto
+export MANGOHUD=1
+exec sway --unsupported-gpu

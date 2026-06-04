@@ -1,0 +1,61 @@
+#!/bin/bash
+# Theme-aware swaylock-effects wrapper with blurred background and Catppuccin ring colors.
+STATE=$(cat "$HOME/.config/theme-state" 2>/dev/null || echo "dark")
+
+if [ "$STATE" = "dark" ]; then
+    BG="1e1e2eb3"
+    INSIDE="00000000"
+    RING="89b4faff"
+    KEYHL="cba6f7ff"
+    BSHL="f38ba8ff"
+    RINGVER="f9e2afff"
+    RINGWRONG="f38ba8ff"
+    SEP="00000000"
+    LINE="00000000"
+    TEXT="cdd6f4ff"
+    VERIF="89b4faff"
+    WRONG="f38ba8ff"
+else
+    BG="eff1f5b3"
+    INSIDE="00000000"
+    RING="1e66f5ff"
+    KEYHL="8839efff"
+    BSHL="d20f39ff"
+    RINGVER="df8e1dff"
+    RINGWRONG="d20f39ff"
+    SEP="00000000"
+    LINE="00000000"
+    TEXT="4c4f69ff"
+    VERIF="1e66f5ff"
+    WRONG="d20f39ff"
+fi
+
+# Plain swaylock has no blur/clock; fall back to a solid-color lock.
+if ! swaylock --help 2>&1 | grep -q -- "--effect-blur"; then
+    exec swaylock -c "${BG:0:6}" "$@"
+fi
+
+exec swaylock \
+    --screenshots \
+    --effect-blur 10x5 \
+    --clock \
+    --timestr "%H:%M" \
+    --datestr "%A, %B %-d" \
+    --font "JetBrains Mono Nerd Font" \
+    --indicator \
+    --indicator-radius 110 \
+    --indicator-thickness 8 \
+    --inside-color "$INSIDE" \
+    --ring-color "$RING" \
+    --key-hl-color "$KEYHL" \
+    --bs-hl-color "$BSHL" \
+    --separator-color "$SEP" \
+    --inside-ver-color "$INSIDE" \
+    --ring-ver-color "$RINGVER" \
+    --inside-wrong-color "$INSIDE" \
+    --ring-wrong-color "$RINGWRONG" \
+    --line-color "$LINE" \
+    --text-color "$TEXT" \
+    --text-ver-color "$VERIF" \
+    --text-wrong-color "$WRONG" \
+    "$@"

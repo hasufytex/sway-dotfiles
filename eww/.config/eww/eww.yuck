@@ -25,7 +25,7 @@
   (button
     :class "workspace ${ws.focused ? "focused" : ""} ${ws.urgent ? "urgent" : ""}"
     :style {ws.urgent ? "background-color: #d20f39; background-image: none; color: #eff1f5;" : ws.focused ? "background-color: #1e66f5; background-image: none; color: #eff1f5;" : ""}
-    :onclick "i3-msg workspace number ${ws.num}"
+    :onclick "~/.local/bin/ws-switch ${ws.num}"
     (box :orientation "h" :space-evenly false :spacing 3 :valign "center"
       (label :class "ws-num" :style {ws.focused ? "color: #eff1f5;" : ""} :text "${ws.num}:")
       (for icon in {ws.icons}

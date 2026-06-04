@@ -1,33 +1,52 @@
 #!/usr/bin/env python3
-# eww deflisten daemon: connects to i3 IPC, emits workspace+icon JSON on each change.
-import json, os, socket, struct, sys
+# eww deflisten daemon: connects to i3/sway IPC, emits workspace+icon JSON on each change.
+import json, os, socket, struct, sys, glob, configparser
 
 MAGIC        = b'i3-ipc'
 T_WORKSPACES = 1
 T_TREE       = 4
 T_SUBSCRIBE  = 2
 
+# Fallback icons for apps with no discoverable .desktop entry (resolution below is primary).
 ICON_MAP = {
-    "firefox":            "/usr/share/icons/hicolor/48x48/apps/firefox.png",
-    "kitty":              "/usr/share/icons/hicolor/256x256/apps/kitty.png",
-    "discord":            "/usr/share/icons/hicolor/256x256/apps/discord.png",
-    "dev.zed.zed":        "/usr/share/icons/hicolor/512x512/apps/zed.png",
-    "nautilus":           "/usr/share/icons/hicolor/scalable/apps/org.gnome.Nautilus.svg",
-    "org.gnome.nautilus": "/usr/share/icons/hicolor/scalable/apps/org.gnome.Nautilus.svg",
-    "sone":               "/usr/share/icons/hicolor/128x128/apps/io.github.lullabyX.sone.png",
+    "sone":                    "/usr/share/icons/hicolor/128x128/apps/io.github.lullabyX.sone.png",
+    "io.github.lullabyx.sone": "/usr/share/icons/hicolor/128x128/apps/io.github.lullabyX.sone.png",
 }
 ICON_SIZES = ["48x48", "32x32", "64x64", "128x128", "256x256", "512x512", "scalable"]
 
+APP_DIRS = [
+    os.path.expanduser("~/.local/share/applications"),
+    "/usr/local/share/applications",
+    "/usr/share/applications",
+    os.path.expanduser("~/.local/share/flatpak/exports/share/applications"),
+    "/var/lib/flatpak/exports/share/applications",
+]
+ICON_ROOTS = [
+    os.path.expanduser("~/.local/share/icons"),
+    os.path.expanduser("~/.icons"),
+    "/usr/share/icons/Adwaita",
+    "/usr/share/icons/hicolor",
+    "/usr/share/icons",
+    "/usr/share/pixmaps",
+]
+
+_ICON_CACHE = {}
+
 
 def socket_path():
-    p = os.environ.get("I3SOCK") or os.environ.get("I3_SOCKET_PATH")
+    p = (os.environ.get("SWAYSOCK") or os.environ.get("I3SOCK")
+         or os.environ.get("I3_SOCKET_PATH"))
     if p:
         return p
     import subprocess
-    p = subprocess.run(["i3", "--get-socketpath"], capture_output=True, text=True).stdout.strip()
-    if p:
-        return p
-    raise RuntimeError("Cannot find i3 socket path")
+    for cmd in (["swaymsg", "--get-socketpath"], ["i3", "--get-socketpath"]):
+        try:
+            p = subprocess.run(cmd, capture_output=True, text=True).stdout.strip()
+        except FileNotFoundError:
+            p = ""
+        if p:
+            return p
+    raise RuntimeError("Cannot find sway/i3 socket path")
 
 
 def connect():
@@ -66,27 +85,103 @@ def query(msg_type, payload=""):
     return data
 
 
-def find_icon(wm_class):
-    key = wm_class.lower()
-    if key in ICON_MAP:
-        return ICON_MAP[key]
-    for sz in ICON_SIZES:
-        for ext in ("png", "svg"):
-            p = f"/usr/share/icons/hicolor/{sz}/apps/{key}.{ext}"
+def find_desktop(appid):
+    low = appid.lower()
+    for d in APP_DIRS:
+        for cand in (f"{appid}.desktop", f"{low}.desktop"):
+            p = os.path.join(d, cand)
             if os.path.exists(p):
                 return p
-    for ext in ("png", "svg", "xpm"):
-        p = f"/usr/share/pixmaps/{key}.{ext}"
-        if os.path.exists(p):
-            return p
+        if os.path.isdir(d):
+            for f in os.listdir(d):
+                if f.lower() == f"{low}.desktop":
+                    return os.path.join(d, f)
+    # Fall back to matching StartupWMClass.
+    for d in APP_DIRS:
+        for p in glob.glob(os.path.join(d, "*.desktop")):
+            try:
+                cp = configparser.ConfigParser(interpolation=None, strict=False)
+                cp.read(p, encoding="utf-8")
+                if cp["Desktop Entry"].get("StartupWMClass", "").lower() == low:
+                    return p
+            except Exception:
+                pass
     return None
 
 
+def desktop_icon_name(desktop):
+    try:
+        cp = configparser.ConfigParser(interpolation=None, strict=False)
+        cp.read(desktop, encoding="utf-8")
+        return cp["Desktop Entry"].get("Icon", "")
+    except Exception:
+        return ""
+
+
+def resolve_icon_name(name):
+    if not name:
+        return None
+    if os.path.isabs(name):
+        return name if os.path.exists(name) else None
+
+    def size_hint(p):
+        for tok in p.split(os.sep):
+            head = tok.split("x")[0]
+            if "x" in tok and head.isdigit():
+                return int(head)
+        return 9999 if "scalable" in p else 0
+
+    for root in ICON_ROOTS:
+        for ext in ("png", "svg", "xpm"):
+            hits = glob.glob(os.path.join(root, "**", f"{name}.{ext}"), recursive=True)
+            if hits:
+                return sorted(hits, key=size_hint)[-1]
+    return None
+
+
+def find_icon(wm_class):
+    key = wm_class.lower()
+    if key in _ICON_CACHE:
+        return _ICON_CACHE[key]
+
+    icon = None
+    desktop = find_desktop(wm_class)
+    if desktop:
+        icon = resolve_icon_name(desktop_icon_name(desktop))
+    if not icon:
+        icon = ICON_MAP.get(key)
+    if not icon:
+        for sz in ICON_SIZES:
+            for ext in ("png", "svg"):
+                p = f"/usr/share/icons/hicolor/{sz}/apps/{key}.{ext}"
+                if os.path.exists(p):
+                    icon = p
+                    break
+            if icon:
+                break
+    if not icon:
+        for ext in ("png", "svg", "xpm"):
+            p = f"/usr/share/pixmaps/{key}.{ext}"
+            if os.path.exists(p):
+                icon = p
+                break
+
+    _ICON_CACHE[key] = icon
+    return icon
+
+
 def get_leaves(node):
-    if node.get("window"):
+    if node.get("window") or node.get("app_id"):
         yield node
     for child in node.get("nodes", []) + node.get("floating_nodes", []):
         yield from get_leaves(child)
+
+
+def get_workspace_nodes(node):
+    if node.get("type") == "workspace":
+        yield node
+    for child in node.get("nodes", []) + node.get("floating_nodes", []):
+        yield from get_workspace_nodes(child)
 
 
 def emit():
@@ -94,16 +189,14 @@ def emit():
     tree       = query(T_TREE)
 
     ws_windows = {}
-    for output in tree.get("nodes", []):
-        for container in output.get("nodes", []):
-            if container.get("name") == "content":
-                for ws_node in container.get("nodes", []):
-                    classes = []
-                    for leaf in get_leaves(ws_node):
-                        cls = (leaf.get("window_properties") or {}).get("class") or ""
-                        if cls:
-                            classes.append(cls)
-                    ws_windows[ws_node.get("name", "")] = classes
+    for ws_node in get_workspace_nodes(tree):
+        classes = []
+        for leaf in get_leaves(ws_node):
+            cls = ((leaf.get("window_properties") or {}).get("class")
+                   or leaf.get("app_id") or "")
+            if cls:
+                classes.append(cls)
+        ws_windows[ws_node.get("name", "")] = classes
 
     out = []
     for ws in sorted(workspaces, key=lambda w: w["num"]):

@@ -21,6 +21,9 @@ fi
 ln -sf "$DOTFILES/i3/.config/i3/theme-${NEW}.conf" \
        "$DOTFILES/i3/.config/i3/theme.conf"
 
+ln -sf "$DOTFILES/sway/.config/sway/theme-${NEW}.conf" \
+       "$DOTFILES/sway/.config/sway/theme.conf"
+
 ln -sf "$HOME/.config/eww/theme-${NEW}.scss" \
        "$HOME/.config/eww/eww.scss"
 if [ "$APPLY" -eq 0 ]; then
@@ -55,8 +58,12 @@ export FZF_DEFAULT_OPTS=" \
 EOF
 fi
 
-if command -v feh >/dev/null 2>&1 && [ -f "$WALLPAPER" ]; then
-    feh --no-fehbg --bg-fill "$WALLPAPER"
+if [ -f "$WALLPAPER" ]; then
+    if [ -n "${SWAYSOCK:-}" ]; then
+        swaymsg output "*" bg "$WALLPAPER" fill >/dev/null 2>&1 || true
+    elif command -v feh >/dev/null 2>&1; then
+        feh --no-fehbg --bg-fill "$WALLPAPER"
+    fi
 fi
 
 mkdir -p "$HOME/.config/gtk-4.0" "$HOME/.config/gtk-3.0"
@@ -128,7 +135,11 @@ if [ -f "$CLAUDE_SETTINGS" ]; then
 fi
 
 if [ "$APPLY" -eq 0 ]; then
-    i3-msg reload >/dev/null 2>&1 || true
+    if [ -n "${SWAYSOCK:-}" ]; then
+        swaymsg reload >/dev/null 2>&1 || true
+    else
+        i3-msg reload >/dev/null 2>&1 || true
+    fi
 fi
 
 kill -SIGUSR1 $(pidof kitty) 2>/dev/null || true
