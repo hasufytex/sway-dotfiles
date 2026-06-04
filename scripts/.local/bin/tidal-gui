@@ -1,4 +1,0 @@
-#!/usr/bin/env bash
-# Launches tidal-dl-ng-gui via poetry.
-cd /home/hasu/Downloads/tidal_dl_ng-Project-main
-/home/hasu/.local/bin/poetry run tidal-dl-ng-gui
