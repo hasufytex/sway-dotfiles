@@ -64,13 +64,13 @@ if [ "$NEW" = "dark" ]; then
     BASE="#1e1e2e"; MANTLE="#181825"; CRUST="#11111b"
     TEXT="#cdd6f4"; SUBTEXT="#a6adc8"
     SURF0="#313244"; SURF1="#45475a"
-    ACCENT="#89b4fa"; ACCENT_FG="#1e1e2e"
+    ACCENT="#cba6f7"; ACCENT_FG="#1e1e2e"
     DESTRUCT="#f38ba8"; SUCCESS="#a6e3a1"; WARN="#f9e2af"
 else
     BASE="#eff1f5"; MANTLE="#e6e9ef"; CRUST="#dce0e8"
     TEXT="#4c4f69"; SUBTEXT="#6c6f85"
     SURF0="#ccd0da"; SURF1="#bcc0cc"
-    ACCENT="#1e66f5"; ACCENT_FG="#eff1f5"
+    ACCENT="#8839ef"; ACCENT_FG="#eff1f5"
     DESTRUCT="#d20f39"; SUCCESS="#40a02b"; WARN="#df8e1d"
 fi
 cat > "$HOME/.config/gtk-4.0/gtk.css" <<EOF
@@ -117,9 +117,9 @@ cp "$HOME/.config/gtk-4.0/gtk.css" "$HOME/.config/gtk-3.0/gtk.css"
 
 gsettings set org.gnome.desktop.interface color-scheme "prefer-${NEW}" 2>/dev/null || true
 if [ "$NEW" = "dark" ]; then
-    gsettings set org.gnome.desktop.interface gtk-theme 'Adwaita-dark' 2>/dev/null || true
+    gsettings set org.gnome.desktop.interface gtk-theme 'catppuccin-mocha-mauve-standard+default' 2>/dev/null || true
 else
-    gsettings set org.gnome.desktop.interface gtk-theme 'Adwaita' 2>/dev/null || true
+    gsettings set org.gnome.desktop.interface gtk-theme 'catppuccin-latte-mauve-standard+default' 2>/dev/null || true
 fi
 
 CLAUDE_SETTINGS="$HOME/.claude/settings.json"
