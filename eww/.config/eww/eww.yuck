@@ -24,10 +24,9 @@
 (defwidget workspace-btn [ws]
   (button
     :class "workspace ${ws.focused ? "focused" : ""} ${ws.urgent ? "urgent" : ""}"
-    :style {ws.urgent ? "background-color: #d20f39; background-image: none; color: #eff1f5;" : ws.focused ? "background-color: #1e66f5; background-image: none; color: #eff1f5;" : ""}
     :onclick "~/.local/bin/ws-switch ${ws.num}"
     (box :orientation "h" :space-evenly false :spacing 3 :valign "center"
-      (label :class "ws-num" :style {ws.focused ? "color: #eff1f5;" : ""} :text "${ws.num}:")
+      (label :class "ws-num" :text "${ws.num}:")
       (for icon in {ws.icons}
         (image :path icon :image-width 22 :image-height 22)))))
 

@@ -16,7 +16,7 @@ bind 'set menu-complete-display-prefix on'
 bind 'TAB:menu-complete'
 bind '"\e[Z": menu-complete-backward'
 
-PS1='\[\e[34m\]\w\[\e[0m\] '
+PS1='\[${PS1_COLOR}\]\w\[\e[0m\] '
 
 alias ls='ls --color=auto'
 alias ll='ls -lah'

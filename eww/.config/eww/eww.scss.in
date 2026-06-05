@@ -1,4 +1,4 @@
-/* eww bar styles - Catppuccin Latte. */
+/* eww bar styles - colors from catppuccin-palette.sh (rendered per flavor). */
 * {
   all: unset;
   font-family: "JetBrainsMono Nerd Font";
@@ -11,8 +11,8 @@ label {
 }
 
 .bar {
-  background-color: rgba(239, 241, 245, 0.90);
-  color: #4c4f69;
+  background-color: rgba(${base}, 0.90);
+  color: ${text};
   padding: 0 4px;
 }
 
@@ -21,13 +21,27 @@ label {
 }
 
 .workspace {
-  color: #6c6f85;
+  color: ${subtext0};
   padding: 2px 10px;
   margin: 4px 2px;
 }
 
+.workspace.focused {
+  background-color: ${blue};
+  color: ${base};
+}
+
+.workspace.urgent {
+  background-color: ${red};
+  color: ${base};
+}
+
 .ws-num {
-  color: #9ca0b0;
+  color: ${overlay1};
+}
+
+.workspace.focused .ws-num {
+  color: ${base};
 }
 
 .right-modules {
@@ -35,7 +49,7 @@ label {
 }
 
 .module {
-  color: #4c4f69;
+  color: ${text};
   font-family: "JetBrainsMono Nerd Font";
   font-size: 14pt;
   padding: 0 6px;

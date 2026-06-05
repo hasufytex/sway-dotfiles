@@ -18,61 +18,43 @@ else
     echo "$NEW" > "$STATE"
 fi
 
+FLAVOR=$([ "$NEW" = dark ] && echo mocha || echo latte)
+source "$DOTFILES/scripts/.local/bin/catppuccin-palette.sh"
+load_palette "$FLAVOR"
+RENDER_VARS=$(printf '${%s} ' "${CATPPUCCIN_NAMES[@]}")
+render() { envsubst "$RENDER_VARS" < "$1" > "$2"; }
+
 ln -sf "$DOTFILES/sway/.config/sway/theme-${NEW}.conf" \
        "$DOTFILES/sway/.config/sway/theme.conf"
 
-ln -sf "$HOME/.config/eww/theme-${NEW}.scss" \
-       "$HOME/.config/eww/eww.scss"
+render "$HOME/.config/eww/eww.scss.in" "$HOME/.config/eww/eww.scss"
 if [ "$APPLY" -eq 0 ]; then
     ~/.local/bin/eww-bar &
 fi
 
-ln -sf "$DOTFILES/kitty/.config/kitty/theme-${NEW}.conf" \
+render "$DOTFILES/kitty/.config/kitty/theme-${NEW}.conf.in" \
        "$DOTFILES/kitty/.config/kitty/theme.conf"
 
-ln -sf "$DOTFILES/yazi/.config/yazi/theme-${NEW}.toml" \
+render "$DOTFILES/yazi/.config/yazi/theme-${NEW}.toml.in" \
        "$DOTFILES/yazi/.config/yazi/theme.toml"
 
-if [ "$NEW" = "dark" ]; then
-    cat > "$HOME/.config/theme-colors.sh" <<'EOF'
-export BAT_THEME="Catppuccin Mocha"
-export FZF_DEFAULT_OPTS=" \
---color=bg+:#313244,bg:#1E1E2E,spinner:#F5E0DC,hl:#F38BA8 \
---color=fg:#CDD6F4,header:#F38BA8,info:#CBA6F7,pointer:#F5E0DC \
---color=marker:#B4BEFE,fg+:#CDD6F4,prompt:#CBA6F7,hl+:#F38BA8 \
---color=selected-bg:#45475A \
---color=border:#6C7086,label:#CDD6F4"
+cat > "$HOME/.config/theme-colors.sh" <<EOF
+export BAT_THEME="Catppuccin ${FLAVOR^}"
+export FZF_DEFAULT_OPTS="--color=bg+:${surface0},bg:${base},spinner:${rosewater},hl:${red},fg:${text},header:${red},info:${mauve},pointer:${rosewater},marker:${lavender},fg+:${text},prompt:${mauve},hl+:${red},selected-bg:${surface1},border:${overlay0},label:${text}"
+export PROMPT_HEX="${accent}"
+export PS1_COLOR=\$'\\e[38;2;$(hex2rgb "$accent")m'
 EOF
-else
-    cat > "$HOME/.config/theme-colors.sh" <<'EOF'
-export BAT_THEME="Catppuccin Latte"
-export FZF_DEFAULT_OPTS=" \
---color=bg+:#CCD0DA,bg:#EFF1F5,spinner:#DC8A78,hl:#D20F39 \
---color=fg:#4C4F69,header:#D20F39,info:#8839EF,pointer:#DC8A78 \
---color=marker:#7287FD,fg+:#4C4F69,prompt:#8839EF,hl+:#D20F39 \
---color=selected-bg:#BCC0CC \
---color=border:#9CA0B0,label:#4C4F69"
-EOF
-fi
 
 if [ -f "$WALLPAPER" ]; then
     swaymsg output "*" bg "$WALLPAPER" fill >/dev/null 2>&1 || true
 fi
 
 mkdir -p "$HOME/.config/gtk-4.0" "$HOME/.config/gtk-3.0"
-if [ "$NEW" = "dark" ]; then
-    BASE="#1e1e2e"; MANTLE="#181825"; CRUST="#11111b"
-    TEXT="#cdd6f4"; SUBTEXT="#a6adc8"
-    SURF0="#313244"; SURF1="#45475a"
-    ACCENT="#cba6f7"; ACCENT_FG="#1e1e2e"
-    DESTRUCT="#f38ba8"; SUCCESS="#a6e3a1"; WARN="#f9e2af"
-else
-    BASE="#eff1f5"; MANTLE="#e6e9ef"; CRUST="#dce0e8"
-    TEXT="#4c4f69"; SUBTEXT="#6c6f85"
-    SURF0="#ccd0da"; SURF1="#bcc0cc"
-    ACCENT="#8839ef"; ACCENT_FG="#eff1f5"
-    DESTRUCT="#d20f39"; SUCCESS="#40a02b"; WARN="#df8e1d"
-fi
+BASE=$base; MANTLE=$mantle; CRUST=$crust
+TEXT=$text; SUBTEXT=$subtext0
+SURF0=$surface0; SURF1=$surface1
+ACCENT=$accent; ACCENT_FG=$accent_fg
+DESTRUCT=$red; SUCCESS=$green; WARN=$yellow
 cat > "$HOME/.config/gtk-4.0/gtk.css" <<EOF
 @define-color accent_color             ${ACCENT};
 @define-color accent_bg_color          ${ACCENT};

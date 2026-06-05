@@ -7,7 +7,8 @@ setopt HIST_IGNORE_DUPS
 
 autoload -Uz compinit && compinit
 
-PROMPT='%F{blue}%~%f '
+setopt PROMPT_SUBST
+PROMPT='%F{${PROMPT_HEX:-blue}}%~%f '
 
 alias ls='ls --color=auto'
 alias ll='ls -lah'
