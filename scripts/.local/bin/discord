@@ -5,4 +5,5 @@ exec /usr/bin/discord \
   --disable-features=UseChromeOSDirectVideoDecoder \
   --use-gl=angle \
   --use-angle=gl \
+  --render-node-override=/dev/dri/renderD128 \
   "$@"
