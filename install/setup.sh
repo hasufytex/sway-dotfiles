@@ -36,7 +36,7 @@ fi
 
 # Stow (--adopt absorbs any pre-existing file, e.g. skel's ~/.bashrc; git checkout restores repo content)
 cd "$DOTFILES"
-stow --adopt bash brave eww kitty mangohud nvim pipewire scripts sway system-env yazi zsh
+stow --adopt bash brave eww kitty mangohud nvim pipewire scripts stremio sway system-env yazi zsh
 git checkout -- .
 
 # System files (tracked under system/): nvidia max-perf service + firefox VAAPI policy
@@ -62,12 +62,16 @@ if [ "$SHELL" != "/bin/bash" ]; then
   chsh -s /bin/bash
 fi
 
-# Enable user services
-systemctl --user enable --now pipewire pipewire-pulse wireplumber stremio-service
+# Enable user services (stremio-service is not a unit — it autostarts in-session via dex)
+systemctl --user enable --now pipewire pipewire-pulse wireplumber
 
 # Lock NVIDIA GPU to maximum performance clocks
 sudo systemctl daemon-reload
 sudo systemctl enable --now nvidia-max-perf
+
+# Firewall + SSD trim
+sudo systemctl enable --now nftables
+sudo systemctl enable fstrim.timer
 
 # Ollama (only if approved/installed)
 if pacman -Qq ollama-cuda &>/dev/null; then
