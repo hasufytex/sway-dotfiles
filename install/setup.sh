@@ -78,4 +78,12 @@ if pacman -Qq ollama-cuda &>/dev/null; then
   sudo systemctl enable --now ollama
 fi
 
+# Virtualization (libvirt/qemu) — only if approved/installed
+if pacman -Qq libvirt &>/dev/null; then
+  sudo systemctl enable --now libvirtd
+  sudo usermod -aG libvirt "$(id -un)"
+  sudo virsh net-autostart default 2>/dev/null || true
+  sudo virsh net-start default 2>/dev/null || true
+fi
+
 echo "Done. Switch to a TTY and run 'sway-session' to launch sway."
