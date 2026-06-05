@@ -6,6 +6,7 @@ stow
 
 linux-zen
 linux-zen-headers
+intel-ucode
 
 sway
 swaybg
