@@ -48,5 +48,3 @@ else
     echo "Audio: E" > "$STATE"
     notify-send -a "Volt" "Exclusive mode" "Volt reserved for Sone (no mic)"
 fi
-
-killall -SIGUSR1 i3status 2>/dev/null || true
