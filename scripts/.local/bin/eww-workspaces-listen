@@ -6,6 +6,9 @@ MAGIC        = b'i3-ipc'
 T_WORKSPACES = 1
 T_TREE       = 4
 T_SUBSCRIBE  = 2
+EV_WINDOW    = 0x80000003   # window event msg type (high bit set)
+# window-event 'change' values that never alter the emitted output, so skip the re-emit.
+SKIP_WINDOW_CHANGES = {"title", "focus", "fullscreen_mode", "mark", "floating"}
 
 # Fallback icons for apps with no discoverable .desktop entry (resolution below is primary).
 ICON_MAP = {
@@ -30,7 +33,13 @@ ICON_ROOTS = [
     "/usr/share/pixmaps",
 ]
 
-_ICON_CACHE = {}
+CACHE_FILE = "/tmp/eww-workspace-icons.json"
+
+try:
+    with open(CACHE_FILE) as f:
+        _ICON_CACHE = json.load(f)
+except Exception:
+    _ICON_CACHE = {}
 
 
 def socket_path():
@@ -77,12 +86,28 @@ def recv(sock):
     return msg_type, json.loads(body)
 
 
+_qsock = None
+
+
 def query(msg_type, payload=""):
-    s = connect()
-    send(s, msg_type, payload)
-    _, data = recv(s)
-    s.close()
-    return data
+    # Reuse one persistent (unsubscribed) socket; reconnect once on failure.
+    global _qsock
+    for attempt in (1, 2):
+        try:
+            if _qsock is None:
+                _qsock = connect()
+            send(_qsock, msg_type, payload)
+            _, data = recv(_qsock)
+            return data
+        except OSError:
+            if _qsock is not None:
+                try:
+                    _qsock.close()
+                except OSError:
+                    pass
+            _qsock = None
+            if attempt == 2:
+                raise
 
 
 def find_desktop(appid):
@@ -167,6 +192,13 @@ def find_icon(wm_class):
                 break
 
     _ICON_CACHE[key] = icon
+    try:
+        tmp = CACHE_FILE + ".tmp"
+        with open(tmp, "w") as f:
+            json.dump(_ICON_CACHE, f)
+        os.replace(tmp, CACHE_FILE)
+    except Exception:
+        pass
     return icon
 
 
@@ -182,6 +214,9 @@ def get_workspace_nodes(node):
         yield node
     for child in node.get("nodes", []) + node.get("floating_nodes", []):
         yield from get_workspace_nodes(child)
+
+
+_last_emit = None
 
 
 def emit():
@@ -214,7 +249,11 @@ def emit():
             "icons":   icons,
         })
 
-    print(json.dumps(out), flush=True)
+    global _last_emit
+    payload = json.dumps(out)
+    if payload != _last_emit:
+        _last_emit = payload
+        print(payload, flush=True)
 
 
 emit()
@@ -225,7 +264,9 @@ recv(sub)
 
 while True:
     try:
-        recv(sub)
+        mtype, ev = recv(sub)
+        if mtype == EV_WINDOW and ev.get("change") in SKIP_WINDOW_CHANGES:
+            continue
         emit()
     except Exception:
         sys.exit(1)
