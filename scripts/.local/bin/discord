@@ -1,0 +1,8 @@
+#!/bin/bash
+# Update-safe wrapper to force NVIDIA VA-API hardware decoding in Discord
+exec /usr/bin/discord \
+  --enable-features=VaapiVideoDecoder,VaapiIgnoreDriverChecks,CanvasOopRasterization \
+  --disable-features=UseChromeOSDirectVideoDecoder \
+  --use-gl=angle \
+  --use-angle=gl \
+  "$@"
