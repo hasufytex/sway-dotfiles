@@ -15,13 +15,12 @@ mapfile -t games < <(
     done
 )
 
-# Theme-aware menu colors (Catppuccin Mocha/Latte), matching wmenu_themed_run.
+# Theme-aware menu colors from the catppuccin palette (wmenu wants bare RRGGBB).
 STATE=$(cat "$HOME/.config/theme-state" 2>/dev/null || echo "dark")
-if [ "$STATE" = "dark" ]; then
-    NB="1e1e2e"; NF="cdd6f4"; SB="89b4fa"; SF="1e1e2e"
-else
-    NB="eff1f5"; NF="4c4f69"; SB="1e66f5"; SF="eff1f5"
-fi
+FLAVOR=$([ "$STATE" = dark ] && echo mocha || echo latte)
+source "$HOME/.local/bin/catppuccin-palette.sh"
+load_palette "$FLAVOR"
+NB=${base#\#}; NF=${text#\#}; SB=${blue#\#}; SF=${base#\#}
 
 selection=$(printf '%s\n' "${games[@]}" | cut -d'|' -f1 | wmenu -i -p "Select game:" \
     -f "monospace 14" -N "$NB" -n "$NF" -S "$SB" -s "$SF")
