@@ -1,61 +1,82 @@
 #!/bin/bash
-# Theme-aware swaylock-effects wrapper with blurred background and Catppuccin ring colors.
+# Theme-aware swaylock wrapper: blurred+dimmed screenshot background with Catppuccin-styled indicator (works on plain swaylock, no effects build needed).
+
 STATE=$(cat "$HOME/.config/theme-state" 2>/dev/null || echo "dark")
 
 if [ "$STATE" = "dark" ]; then
-    BG="1e1e2eb3"
-    INSIDE="00000000"
-    RING="89b4faff"
-    KEYHL="cba6f7ff"
-    BSHL="f38ba8ff"
-    RINGVER="f9e2afff"
-    RINGWRONG="f38ba8ff"
-    SEP="00000000"
-    LINE="00000000"
-    TEXT="cdd6f4ff"
-    VERIF="89b4faff"
-    WRONG="f38ba8ff"
+    FALLBACK="1e1e2e"
+    INSIDE="1e1e2ecc"
+    RING="89b4fa"
+    KEYHL="cba6f7"
+    BSHL="f38ba8"
+    RINGVER="a6e3a1"
+    RINGWRONG="f38ba8"
+    RINGCLEAR="f9e2af"
+    TEXT="cdd6f4"
+    TEXTVER="a6e3a1"
+    TEXTWRONG="f38ba8"
+    TEXTCLEAR="f9e2af"
+    CAPS="f9e2af"
 else
-    BG="eff1f5b3"
-    INSIDE="00000000"
-    RING="1e66f5ff"
-    KEYHL="8839efff"
-    BSHL="d20f39ff"
-    RINGVER="df8e1dff"
-    RINGWRONG="d20f39ff"
-    SEP="00000000"
-    LINE="00000000"
-    TEXT="4c4f69ff"
-    VERIF="1e66f5ff"
-    WRONG="d20f39ff"
+    FALLBACK="eff1f5"
+    INSIDE="eff1f5cc"
+    RING="1e66f5"
+    KEYHL="8839ef"
+    BSHL="d20f39"
+    RINGVER="40a02b"
+    RINGWRONG="d20f39"
+    RINGCLEAR="df8e1d"
+    TEXT="4c4f69"
+    TEXTVER="40a02b"
+    TEXTWRONG="d20f39"
+    TEXTCLEAR="df8e1d"
+    CAPS="df8e1d"
 fi
 
-# Plain swaylock has no blur/clock; fall back to a solid-color lock.
-if ! swaylock --help 2>&1 | grep -q -- "--effect-blur"; then
-    exec swaylock -c "${BG:0:6}" "$@"
+WALL=$(pgrep -a swaybg 2>/dev/null | grep -oP -- '-i \K\S+' | head -1)
+if [ -z "$WALL" ] || [ ! -f "$WALL" ]; then
+    WALL=$(awk '/^output .* bg /{print $4; exit}' "$HOME/.config/sway/config" 2>/dev/null)
+    WALL="${WALL/#\~/$HOME}"
+fi
+if [ -n "$WALL" ] && [ -f "$WALL" ]; then
+    BACKDROP=(-i "$WALL" -s fill)
+else
+    BACKDROP=(-c "$FALLBACK")
 fi
 
-exec swaylock \
-    --screenshots \
-    --effect-blur 10x5 \
-    --clock \
-    --timestr "%H:%M" \
-    --datestr "%A, %B %-d" \
-    --font "JetBrains Mono Nerd Font" \
-    --indicator \
-    --indicator-radius 110 \
-    --indicator-thickness 8 \
+swaylock \
+    "${BACKDROP[@]}" \
+    --font "JetBrainsMono Nerd Font" \
+    --font-size 26 \
+    --indicator-idle-visible \
+    --indicator-radius 120 \
+    --indicator-thickness 10 \
+    --indicator-caps-lock \
+    --show-failed-attempts \
+    --hide-keyboard-layout \
     --inside-color "$INSIDE" \
+    --inside-ver-color "$INSIDE" \
+    --inside-wrong-color "$INSIDE" \
+    --inside-clear-color "$INSIDE" \
+    --inside-caps-lock-color "$INSIDE" \
     --ring-color "$RING" \
+    --ring-ver-color "$RINGVER" \
+    --ring-wrong-color "$RINGWRONG" \
+    --ring-clear-color "$RINGCLEAR" \
+    --ring-caps-lock-color "$CAPS" \
     --key-hl-color "$KEYHL" \
     --bs-hl-color "$BSHL" \
-    --separator-color "$SEP" \
-    --inside-ver-color "$INSIDE" \
-    --ring-ver-color "$RINGVER" \
-    --inside-wrong-color "$INSIDE" \
-    --ring-wrong-color "$RINGWRONG" \
-    --line-color "$LINE" \
+    --caps-lock-key-hl-color "$CAPS" \
+    --caps-lock-bs-hl-color "$BSHL" \
+    --line-color "00000000" \
+    --line-clear-color "00000000" \
+    --line-ver-color "00000000" \
+    --line-wrong-color "00000000" \
+    --line-caps-lock-color "00000000" \
+    --separator-color "00000000" \
     --text-color "$TEXT" \
-    --text-ver-color "$VERIF" \
-    --text-wrong-color "$WRONG" \
+    --text-ver-color "$TEXTVER" \
+    --text-wrong-color "$TEXTWRONG" \
+    --text-clear-color "$TEXTCLEAR" \
+    --text-caps-lock-color "$CAPS" \
     "$@"
