@@ -1,4 +1,5 @@
 scripts/.local/bin/claude
+scripts/.local/bin/py-spy
 sway/.config/sway/theme.conf
 kitty/.config/kitty/theme.conf
 kitty/.config/kitty/kitty.conf.bak
