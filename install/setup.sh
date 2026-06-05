@@ -5,6 +5,9 @@ set -e
 DOTFILES="$(cd "$(dirname "$0")/.." && pwd)"
 read_list() { grep -vE '^[[:space:]]*(#|$)' "$1"; }
 
+# Faster/nicer pacman (mirror this machine)
+sudo sed -i 's/^#\s*ParallelDownloads.*/ParallelDownloads = 5/; s/^#Color$/Color/' /etc/pacman.conf
+
 # Update + approved native packages
 sudo pacman -Syu --noconfirm
 mapfile -t PAC < <(read_list "$DOTFILES/install/pkglist-pacman.txt")
@@ -31,14 +34,21 @@ if ! command -v eww &>/dev/null; then
   rm -rf "$tmpdir"
 fi
 
-# Stow
+# Stow (--adopt absorbs any pre-existing file, e.g. skel's ~/.bashrc; git checkout restores repo content)
 cd "$DOTFILES"
-stow bash brave eww kitty mangohud nvim pipewire scripts sway system-env yazi zsh
+stow --adopt bash brave eww kitty mangohud nvim pipewire scripts sway system-env yazi zsh
+git checkout -- .
 
 # System files (tracked under system/): nvidia max-perf service + firefox VAAPI policy
 sudo cp "$DOTFILES/system/etc/systemd/system/nvidia-max-perf.service" /etc/systemd/system/
 sudo install -Dm644 "$DOTFILES/system/usr/lib/firefox/distribution/policies.json" \
   /usr/lib/firefox/distribution/policies.json
+
+# Networking: systemd-networkd (wired DHCP) + resolved
+sudo install -Dm644 "$DOTFILES/system/etc/systemd/network/20-wired.network" \
+  /etc/systemd/network/20-wired.network
+sudo systemctl enable systemd-networkd systemd-resolved
+sudo ln -sf /run/systemd/resolve/stub-resolv.conf /etc/resolv.conf
 
 # Catppuccin wallpaper
 mkdir -p "$HOME/Downloads"
@@ -58,5 +68,10 @@ systemctl --user enable --now pipewire pipewire-pulse wireplumber stremio-servic
 # Lock NVIDIA GPU to maximum performance clocks
 sudo systemctl daemon-reload
 sudo systemctl enable --now nvidia-max-perf
+
+# Ollama (only if approved/installed)
+if pacman -Qq ollama-cuda &>/dev/null; then
+  sudo systemctl enable --now ollama
+fi
 
 echo "Done. Switch to a TTY and run 'sway-session' to launch sway."
