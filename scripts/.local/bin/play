@@ -15,19 +15,33 @@ mapfile -t games < <(
     done
 )
 
-selection=$(printf '%s\n' "${games[@]}" | cut -d'|' -f1 | dmenu -i -p "Select game:" \
-    -nb "#1e1e1e" -nf "#d4d4d4" \
-    -sb "#264f78" -sf "#ffffff" \
-    -fn "monospace-14")
+# Theme-aware menu colors (Catppuccin Mocha/Latte), matching wmenu_themed_run.
+STATE=$(cat "$HOME/.config/theme-state" 2>/dev/null || echo "dark")
+if [ "$STATE" = "dark" ]; then
+    NB="1e1e2e"; NF="cdd6f4"; SB="89b4fa"; SF="1e1e2e"
+else
+    NB="eff1f5"; NF="4c4f69"; SB="1e66f5"; SF="eff1f5"
+fi
+
+selection=$(printf '%s\n' "${games[@]}" | cut -d'|' -f1 | wmenu -i -p "Select game:" \
+    -f "monospace 14" -N "$NB" -n "$NF" -S "$SB" -s "$SF")
 
 [ -z "$selection" ] && exit 0
 
 appid=$(printf '%s\n' "${games[@]}" | grep "^$selection|" | cut -d'|' -f2)
 
+# Pick the first workspace in [START_WS, MAX_WS] that has no windows.
+occupied=$(swaymsg -t get_tree | jq -r '
+    .. | objects | select(.type == "workspace")
+    | select([recurse(.nodes[]?, .floating_nodes[]?)
+              | select((.type == "con" or .type == "floating_con")
+                       and (.nodes | length == 0)
+                       and (.floating_nodes | length == 0))] | length > 0)
+    | .num')
+
 free_ws=""
-for ws in $(seq $START_WS $MAX_WS); do
-    windows=$(i3-msg -t get_workspaces | jq -r ".[] | select(.num==$ws) | .windows // 0")
-    if [ "$windows" -eq 0 ]; then
+for ws in $(seq "$START_WS" "$MAX_WS"); do
+    if ! grep -qx "$ws" <<<"$occupied"; then
         free_ws=$ws
         break
     fi
@@ -35,7 +49,7 @@ done
 
 [ -z "$free_ws" ] && free_ws=$START_WS
 
-i3-msg workspace number "$free_ws"
+swaymsg workspace number "$free_ws"
 
 __GL_THREADED_OPTIMIZATIONS=0 \
 __GL_SYNC_TO_VBLANK=1 \
