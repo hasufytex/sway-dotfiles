@@ -69,3 +69,10 @@ rust
 
 nautilus
 gnome-themes-extra
+
+libreoffice-fresh
+linux-firmware
+ollama-cuda
+python-pip
+python-pipx
+tree
