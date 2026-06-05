@@ -3,6 +3,7 @@
 git
 base-devel
 stow
+nftables
 
 linux-zen
 linux-zen-headers
