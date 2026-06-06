@@ -30,6 +30,7 @@ bindsym $mod+e exec nautilus
 bindsym $mod+r exec ~/.local/bin/wmenu_themed_run
 bindsym $mod+space exec ~/.local/bin/toggle_kb_layout.sh
 bindsym $mod+Shift+t exec ~/.local/bin/toggle_theme.sh
+bindsym $mod+b exec ~/.local/bin/eww-bar-toggle
 
 bindsym $mod+Shift+s exec ~/.local/bin/screenshot_save_wl.sh
 bindsym $mod+Shift+c exec ~/.local/bin/screenshot_copy_wl.sh
