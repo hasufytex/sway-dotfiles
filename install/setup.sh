@@ -86,4 +86,12 @@ if pacman -Qq libvirt &>/dev/null; then
   sudo virsh net-start default 2>/dev/null || true
 fi
 
+# AdGuard Home — DNS-level ad/tracker blocking (only if approved/installed)
+if pacman -Qq adguardhome &>/dev/null; then
+  sudo install -Dm644 "$DOTFILES/system/etc/systemd/resolved.conf.d/adguardhome.conf" \
+    /etc/systemd/resolved.conf.d/adguardhome.conf
+  sudo systemctl restart systemd-resolved
+  sudo systemctl enable --now adguardhome
+fi
+
 echo "Done. Switch to a TTY and run 'sway-session' to launch sway."

@@ -3,3 +3,6 @@ Name=en*
 
 [Network]
 DHCP=yes
+
+[DHCPv4]
+RequestAddress=192.168.100.2
