@@ -47,7 +47,7 @@ sudo install -Dm644 "$DOTFILES/system/usr/lib/firefox/distribution/policies.json
 # Networking: systemd-networkd (wired DHCP) + resolved
 sudo install -Dm644 "$DOTFILES/system/etc/systemd/network/20-wired.network" \
   /etc/systemd/network/20-wired.network
-sudo systemctl enable systemd-networkd systemd-resolved
+sudo systemctl enable systemd-networkd systemd-networkd-wait-online systemd-resolved
 sudo ln -sf /run/systemd/resolve/stub-resolv.conf /etc/resolv.conf
 
 # Catppuccin wallpaper
@@ -90,7 +90,10 @@ fi
 if pacman -Qq adguardhome &>/dev/null; then
   sudo install -Dm644 "$DOTFILES/system/etc/systemd/resolved.conf.d/adguardhome.conf" \
     /etc/systemd/resolved.conf.d/adguardhome.conf
+  sudo install -Dm644 "$DOTFILES/system/etc/systemd/system/adguardhome.service.d/override.conf" \
+    /etc/systemd/system/adguardhome.service.d/override.conf
   sudo systemctl restart systemd-resolved
+  sudo systemctl daemon-reload
   sudo systemctl enable --now adguardhome
 fi
 
