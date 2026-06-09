@@ -1,0 +1,4 @@
+# class                 border         bground        text           indicator
+   client.focused          ${accent}      ${accent}      ${accent_fg}   ${accent}
+   client.focused_inactive ${surface0}    ${surface0}    ${subtext0}    ${surface0}
+   client.unfocused        ${crust}       ${crust}       ${overlay0}    ${crust}

@@ -25,10 +25,9 @@ tiling_drag enable
 
 bindsym $mod+q exec kitty
 bindsym $mod+c kill
-bindsym $mod+m exec swaynag -t warning -m 'You pressed the exit shortcut. Exit sway?' -B 'Yes, exit sway' 'swaymsg exit'
 bindsym $mod+e exec nautilus
+
 bindsym $mod+r exec ~/.local/bin/wmenu_themed_run
-bindsym $mod+space exec ~/.local/bin/toggle_kb_layout.sh
 bindsym $mod+Shift+t exec ~/.local/bin/toggle_theme.sh
 bindsym $mod+b exec ~/.local/bin/eww-bar-toggle
 
@@ -36,24 +35,29 @@ bindsym $mod+Shift+s exec ~/.local/bin/screenshot_save_wl.sh
 bindsym $mod+Shift+c exec ~/.local/bin/screenshot_copy_wl.sh
 bindsym $mod+Shift+f exec ~/.local/bin/screenshot_fullscreen_wl.sh
 
-bindsym $mod+j split toggle
 bindsym $mod+p floating toggle
+
 bindsym $mod+Left focus left
 bindsym $mod+Down focus down
 bindsym $mod+Up focus up
 bindsym $mod+Right focus right
+
 bindsym $mod+Shift+Left move left
 bindsym $mod+Shift+Down move down
 bindsym $mod+Shift+Up move up
 bindsym $mod+Shift+Right move right
+
 bindsym $mod+h split h
 bindsym $mod+v split v
-bindsym $mod+s layout stacking
-bindsym $mod+w layout tabbed
-bindsym $mod+t layout toggle split
+
+bindsym $mod+t layout toggle tabbed split
+bindsym $mod+w split layout tabbed
+
 bindsym $mod+a focus parent
+
 bindsym $mod+Shift+minus move scratchpad
 bindsym $mod+minus scratchpad show
+
 bindsym $mod+l exec ~/.local/bin/swaylock_themed
 
 set $ws1 "1"
@@ -90,14 +94,13 @@ bindsym $mod+Shift+9 move container to workspace number $ws9
 bindsym $mod+Shift+0 move container to workspace number $ws10
 
 mode "resize" {
-        bindsym Left        resize shrink width 10 px or 10 ppt
-        bindsym Down        resize grow height 10 px or 10 ppt
-        bindsym Up          resize shrink height 10 px or 10 ppt
-        bindsym Right       resize grow width 10 px or 10 ppt
+        bindsym Left        resize shrink width 30 px or 30 ppt
+        bindsym Down        resize grow height 30 px or 30 ppt
+        bindsym Up          resize shrink height 30 px or 30 ppt
+        bindsym Right       resize grow width 30 px or 30 ppt
         bindsym Return mode "default"
         bindsym Escape mode "default"
 }
-
 bindsym $mod+Ctrl+r mode "resize"
 
 output DP-4 mode 2560x1440@170.020Hz
@@ -107,10 +110,9 @@ output * bg ~/Downloads/1378545.jpg fill
 input type:keyboard {
     xkb_layout "us,bg"
     xkb_variant ",phonetic"
+    xkb_options "grp:win_space_toggle"
 }
 
 input type:pointer {
     accel_profile flat
 }
-
-default_border none

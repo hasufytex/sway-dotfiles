@@ -1,51 +1,49 @@
-# Catppuccin Latte kitty color theme.
+# ==============================================================================
+# CATPPUCCIN ACCENT-AWARE KITTY CONFIGURATION
+# ==============================================================================
 
-# The basic colors
+# Core Text & App Background
 foreground              ${text}
 background              ${base}
-selection_foreground    ${base}
-selection_background    ${rosewater}
 
-# Cursor colors
-cursor                  ${rosewater}
+# High-contrast Text Selection matching your chosen Accent
+selection_foreground    ${base}
+selection_background    ${accent}
+
+# Cursor rules (Inverts text cleanly on hover)
+cursor                  ${text}
 cursor_text_color       ${base}
 
-# Scrollbar colors
-scrollbar_handle_color  ${overlay2}
-scrollbar_track_color   ${surface1}
+# URL highlight links track your accent choice
+url_color               ${accent}
 
-# URL color when hovering with mouse
-url_color               ${rosewater}
-
-# Kitty window border colors
-active_border_color     ${lavender}
-inactive_border_color   ${overlay0}
+# Window borders & bells
+active_border_color     ${accent}
+inactive_border_color   ${surface1}
 bell_border_color       ${yellow}
 
-# OS Window titlebar colors
-wayland_titlebar_color system
-macos_titlebar_color system
-
-# Tab bar colors
+# Tab Bar styling configurations
 active_tab_foreground   ${base}
-active_tab_background   ${mauve}
-inactive_tab_foreground ${text}
-inactive_tab_background ${overlay0}
-tab_bar_background      ${surface1}
+active_tab_background   ${accent}
+inactive_tab_foreground ${subtext1}
+inactive_tab_background ${mantle}
+tab_bar_background      ${crust}
 
-# Colors for marks (marked text in the terminal)
+# Scrollback markers
 mark1_foreground ${base}
-mark1_background ${lavender}
+mark1_background ${accent}
 mark2_foreground ${base}
-mark2_background ${mauve}
+mark2_background ${lavender}
 mark3_foreground ${base}
-mark3_background ${sapphire}
+mark3_background ${mauve}
 
-# The 16 terminal colors
+# ==============================================================================
+# THE 16 STANDARD TERMINAL COLORS
+# ==============================================================================
 
 # black
-color0 ${subtext1}
-color8 ${subtext0}
+color0 ${surface1}
+color8 ${surface2}
 
 # red
 color1 ${red}
@@ -59,9 +57,9 @@ color10 ${green}
 color3  ${yellow}
 color11 ${yellow}
 
-# blue
-color4  ${blue}
-color12 ${blue}
+# blue (Dynamically mapped to your top-level ACCENT_CHOICE)
+color4  ${accent}
+color12 ${accent}
 
 # magenta
 color5  ${pink}
@@ -72,7 +70,5 @@ color6  ${teal}
 color14 ${teal}
 
 # white
-color7  ${surface2}
-color15 ${surface1}
-
-background_opacity 0.90
+color7  ${subtext1}
+color15 ${subtext0}

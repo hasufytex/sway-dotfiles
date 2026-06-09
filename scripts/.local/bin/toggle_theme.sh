@@ -3,6 +3,20 @@
 # Usage: toggle_theme.sh [--apply]  (--apply re-applies without flipping)
 set -u
 
+# ==============================================================================
+# USER CONFIGURATION: CHANGE VISUAL PREFERENCES HERE
+# ==============================================================================
+# All Available Dark Flavors:
+#   latte, frappe, macchiato, mocha
+DARK_FLAVOR="mocha"
+
+# All Available Accent Options:
+#   rosewater, flamingo, pink, mauve, red, maroon, peach, yellow, green,
+#   teal, sky, sapphire, blue, lavender, text, subtext1, subtext0, overlay2,
+#   overlay1, overlay0, surface2, surface1, surface0, base, mantle, crust
+ACCENT_CHOICE="blue"
+# ==============================================================================
+
 STATE="$HOME/.config/theme-state"
 DOTFILES="$HOME/my-i3-dotfiles"
 WALLPAPER="$HOME/Downloads/1378545.jpg"
@@ -18,22 +32,39 @@ else
     echo "$NEW" > "$STATE"
 fi
 
-FLAVOR=$([ "$NEW" = dark ] && echo mocha || echo latte)
+# Assign the flavor based on your preferences
+FLAVOR=$([ "$NEW" = dark ] && echo "$DARK_FLAVOR" || echo "latte")
+
 source "$DOTFILES/scripts/.local/bin/catppuccin-palette.sh"
 load_palette "$FLAVOR"
-RENDER_VARS=$(printf '${%s} ' "${CATPPUCCIN_NAMES[@]}")
+
+# Overwrite the accent to follow your top-level ACCENT_CHOICE variable
+eval "accent=\$$ACCENT_CHOICE"
+
+
+# Define the render function first
 render() { envsubst "$RENDER_VARS" < "$1" > "$2"; }
 
-ln -sf "$DOTFILES/sway/.config/sway/theme-${NEW}.conf" \
-       "$DOTFILES/sway/.config/sway/theme.conf"
+# 1. Update RENDER_VARS to include both accent and accent_fg
+RENDER_VARS=$(printf '${%s} ' "${CATPPUCCIN_NAMES[@]}")
+RENDER_VARS="$RENDER_VARS \${accent} \${accent_fg}"
+
+# 2. Render Sway and Eww as normal
+render "$DOTFILES/sway/.config/sway/theme-${NEW}.conf.in" "$DOTFILES/sway/.config/sway/theme.conf"
 
 render "$HOME/.config/eww/eww.scss.in" "$HOME/.config/eww/eww.scss"
 if [ "$APPLY" -eq 0 ]; then
     ~/.local/bin/eww-bar &
 fi
 
+# 3. Render the updated Kitty theme template
 render "$DOTFILES/kitty/.config/kitty/theme-${NEW}.conf.in" \
        "$DOTFILES/kitty/.config/kitty/theme.conf"
+
+# 4. Force Kitty to live-reload the new colors instantly
+if command -v kitty >/dev/null 2>&1; then
+    kitty @ set-colors --all "$DOTFILES/kitty/.config/kitty/theme.conf" 2>/dev/null || true
+fi
 
 render "$DOTFILES/yazi/.config/yazi/theme-${NEW}.toml.in" \
        "$DOTFILES/yazi/.config/yazi/theme.toml"
@@ -98,10 +129,11 @@ EOF
 cp "$HOME/.config/gtk-4.0/gtk.css" "$HOME/.config/gtk-3.0/gtk.css"
 
 gsettings set org.gnome.desktop.interface color-scheme "prefer-${NEW}" 2>/dev/null || true
-if [ "$NEW" = "dark" ]; then
-    gsettings set org.gnome.desktop.interface gtk-theme 'catppuccin-mocha-mauve-standard+default' 2>/dev/null || true
-else
-    gsettings set org.gnome.desktop.interface gtk-theme 'catppuccin-latte-mauve-standard+default' 2>/dev/null || true
+
+ZED_SETTINGS="$HOME/.config/zed/settings.json"
+if [ -f "$ZED_SETTINGS" ]; then
+    # Direct swap: if NEW is dark, set mode to dark. If NEW is light, set mode to light.
+    sed -i -E "s/\"mode\": \"(dark|light)\"/\"mode\": \"${NEW}\"/" "$ZED_SETTINGS"
 fi
 
 CLAUDE_SETTINGS="$HOME/.claude/settings.json"
