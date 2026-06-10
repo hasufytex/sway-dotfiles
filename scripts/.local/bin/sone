@@ -1,4 +1,4 @@
 #!/bin/sh
 # Sone launcher — disables WebKit DMABUF renderer before exec.
-# export WEBKIT_DISABLE_DMABUF_RENDERER=1
+export WEBKIT_DISABLE_DMABUF_RENDERER=1
 exec /usr/bin/sone "$@"
