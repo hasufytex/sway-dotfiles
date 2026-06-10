@@ -1,5 +1,0 @@
-[Desktop Entry]
-Type=Application
-Name=Stremio Service
-Exec=/usr/bin/stremio-service
-X-GNOME-Autostart-enabled=true

@@ -5,7 +5,7 @@ font pango:monospace 16
 default_border none
 default_floating_border none
 
-exec dex --autostart --environment sway
+exec /usr/bin/stremio-service
 exec swayidle -w timeout 300 "$HOME/.local/bin/swaylock_themed" before-sleep "$HOME/.local/bin/swaylock_themed"
 
 exec_always ~/.local/bin/eww-bar
