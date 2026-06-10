@@ -1,8 +1,11 @@
+# systemd-networkd: wired DHCP for the address only; DHCP-provided DNS is ignored so resolved's global Cloudflare DoT is used. Symlinked into /etc/systemd/network/ by setup.sh.
 [Match]
-Name=en*
+Name=e**
 
 [Network]
 DHCP=yes
+LinkLocalAddressing=no
+IPv6AcceptRA=no
 
 [DHCPv4]
-RequestAddress=192.168.100.2
+UseDNS=no

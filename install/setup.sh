@@ -6,7 +6,7 @@ DOTFILES="$(cd "$(dirname "$0")/.." && pwd)"
 read_list() { grep -vE '^[[:space:]]*(#|$)' "$1"; }
 
 # Faster/nicer pacman (mirror this machine)
-sudo sed -i 's/^#\s*ParallelDownloads.*/ParallelDownloads = 5/; s/^#Color$/Color/' /etc/pacman.conf
+sudo sed -i 's/^#\s*ParallelDownloads.*/ParallelDownloads = 20/; s/^#Color$/Color/' /etc/pacman.conf
 
 # Update + approved native packages
 sudo pacman -Syu --noconfirm
@@ -30,13 +30,13 @@ fi
 if ! command -v eww &>/dev/null; then
   tmpdir=$(mktemp -d)
   git clone https://aur.archlinux.org/eww.git "$tmpdir/eww"
-  (cd "$tmpdir/eww" && makepkg -si --skippgpcheck --noconfirm)
+  (cd "$tmpdir/eww" && makepkg -si --noconfirm)
   rm -rf "$tmpdir"
 fi
 
 # Stow (--adopt absorbs any pre-existing file, e.g. skel's ~/.bashrc; git checkout restores repo content)
 cd "$DOTFILES"
-stow --adopt bash brave eww kitty mangohud nvim pipewire scripts stremio sway system-env yazi zsh
+stow --adopt bash brave eww kitty mangohud nvim pipewire scripts sway system-env yazi zsh
 git checkout -- .
 
 # System files (tracked under system/): nvidia max-perf service + firefox VAAPI policy
@@ -44,9 +44,12 @@ sudo cp "$DOTFILES/system/etc/systemd/system/nvidia-max-perf.service" /etc/syste
 sudo install -Dm644 "$DOTFILES/system/usr/lib/firefox/distribution/policies.json" \
   /usr/lib/firefox/distribution/policies.json
 
-# Networking: systemd-networkd (wired DHCP) + resolved
+# Networking: systemd-networkd (wired DHCP) + resolved (Cloudflare DNS-over-TLS).
+# Copied (not symlinked): the systemd-resolve/-network service users can't read configs under a 0700/0710 home.
 sudo install -Dm644 "$DOTFILES/system/etc/systemd/network/20-wired.network" \
   /etc/systemd/network/20-wired.network
+sudo install -Dm644 "$DOTFILES/system/etc/systemd/resolved.conf" \
+  /etc/systemd/resolved.conf
 sudo systemctl enable systemd-networkd systemd-networkd-wait-online systemd-resolved
 sudo ln -sf /run/systemd/resolve/stub-resolv.conf /etc/resolv.conf
 
@@ -57,12 +60,7 @@ mkdir -p "$HOME/Downloads"
 echo "dark" > "$HOME/.config/theme-state"
 "$HOME/.local/bin/toggle_theme.sh" --apply || true
 
-# Default shell to bash
-if [ "$SHELL" != "/bin/bash" ]; then
-  chsh -s /bin/bash
-fi
-
-# Enable user services (stremio-service is not a unit — it autostarts in-session via dex)
+# Enable user services (stremio-service is launched in-session via sway `exec`)
 systemctl --user enable --now pipewire pipewire-pulse wireplumber
 
 # Lock NVIDIA GPU to maximum performance clocks
@@ -72,29 +70,5 @@ sudo systemctl enable --now nvidia-max-perf
 # Firewall + SSD trim
 sudo systemctl enable --now nftables
 sudo systemctl enable fstrim.timer
-
-# Ollama (only if approved/installed)
-if pacman -Qq ollama-cuda &>/dev/null; then
-  sudo systemctl enable --now ollama
-fi
-
-# Virtualization (libvirt/qemu) — only if approved/installed
-if pacman -Qq libvirt &>/dev/null; then
-  sudo systemctl enable --now libvirtd
-  sudo usermod -aG libvirt "$(id -un)"
-  sudo virsh net-autostart default 2>/dev/null || true
-  sudo virsh net-start default 2>/dev/null || true
-fi
-
-# AdGuard Home — DNS-level ad/tracker blocking (only if approved/installed)
-if pacman -Qq adguardhome &>/dev/null; then
-  sudo install -Dm644 "$DOTFILES/system/etc/systemd/resolved.conf.d/adguardhome.conf" \
-    /etc/systemd/resolved.conf.d/adguardhome.conf
-  sudo install -Dm644 "$DOTFILES/system/etc/systemd/system/adguardhome.service.d/override.conf" \
-    /etc/systemd/system/adguardhome.service.d/override.conf
-  sudo systemctl restart systemd-resolved
-  sudo systemctl daemon-reload
-  sudo systemctl enable --now adguardhome
-fi
 
 echo "Done. Switch to a TTY and run 'sway-session' to launch sway."
