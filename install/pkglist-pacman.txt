@@ -76,6 +76,7 @@ grim
 slurp
 wl-clipboard
 imagemagick
+mpv
 
 # Languages & Runtimes
 go
