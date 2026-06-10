@@ -76,6 +76,26 @@ export PROMPT_HEX="${accent}"
 export PS1_COLOR=\$'\\e[38;2;$(hex2rgb "$accent")m'
 EOF
 
+# Lock-screen colours for swaylock_themed. swaylock wants bare RRGGBB(AA), so
+# strip the leading '#'. RING follows the accent, like every other app.
+sl_base=${base#\#}; sl_accent=${accent#\#}; sl_mauve=${mauve#\#}
+sl_red=${red#\#}; sl_green=${green#\#}; sl_yellow=${yellow#\#}; sl_text=${text#\#}
+cat > "$HOME/.config/swaylock-colors.sh" <<EOF
+FALLBACK="${sl_base}"
+INSIDE="${sl_base}cc"
+RING="${sl_accent}"
+KEYHL="${sl_mauve}"
+BSHL="${sl_red}"
+RINGVER="${sl_green}"
+RINGWRONG="${sl_red}"
+RINGCLEAR="${sl_yellow}"
+TEXT="${sl_text}"
+TEXTVER="${sl_green}"
+TEXTWRONG="${sl_red}"
+TEXTCLEAR="${sl_yellow}"
+CAPS="${sl_yellow}"
+EOF
+
 if [ -f "$WALLPAPER" ]; then
     swaymsg output "*" bg "$WALLPAPER" fill >/dev/null 2>&1 || true
 fi
