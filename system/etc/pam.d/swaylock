@@ -1,0 +1,6 @@
+#%PAM-1.0
+# swaylock screen-unlock: authenticate the current user by password only.
+# Deliberately omits pam_faillock so mistyping after a long idle can't lock you
+# out of your own already-running session (the "type it 50 times" lockout).
+auth     required  pam_unix.so  try_first_pass nullok
+account  required  pam_unix.so

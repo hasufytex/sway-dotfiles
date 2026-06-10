@@ -44,6 +44,9 @@ sudo cp "$DOTFILES/system/etc/systemd/system/nvidia-max-perf.service" /etc/syste
 sudo install -Dm644 "$DOTFILES/system/usr/lib/firefox/distribution/policies.json" \
   /usr/lib/firefox/distribution/policies.json
 
+# swaylock PAM without pam_faillock (no self-lockout at the screen locker).
+sudo install -Dm644 "$DOTFILES/system/etc/pam.d/swaylock" /etc/pam.d/swaylock
+
 # Networking: systemd-networkd (wired DHCP) + resolved (Cloudflare DNS-over-TLS).
 # Copied (not symlinked): the systemd-resolve/-network service users can't read configs under a 0700/0710 home.
 sudo install -Dm644 "$DOTFILES/system/etc/systemd/network/20-wired.network" \
