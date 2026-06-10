@@ -18,7 +18,7 @@ ACCENT_CHOICE="blue"
 # ==============================================================================
 
 STATE="$HOME/.config/theme-state"
-DOTFILES="$HOME/my-i3-dotfiles"
+DOTFILES="$HOME/sway-dotfiles"
 WALLPAPER="$HOME/Downloads/1378545.jpg"
 
 CURRENT=$(cat "$STATE" 2>/dev/null || echo "dark")
