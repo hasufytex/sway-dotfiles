@@ -1,11 +1,15 @@
 #!/bin/bash
-# Theme-aware wmenu-run launcher with the dmenu look (Catppuccin Mocha/Latte).
-STATE=$(cat "$HOME/.config/theme-state" 2>/dev/null || echo "dark")
+# Theme-aware wmenu-run launcher (dmenu look); colors follow toggle_theme via the Catppuccin palette.
+DOTFILES="$HOME/my-i3-dotfiles"
+STATE=$(cat "$HOME/.config/theme-state" 2>/dev/null || echo dark)
+FLAVOR=$([ "$STATE" = light ] && echo latte || echo mocha)
 
-if [ "$STATE" = "dark" ]; then
-    NB="1e1e2e"; NF="cdd6f4"; SB="89b4fa"; SF="1e1e2e"
-else
-    NB="eff1f5"; NF="4c4f69"; SB="1e66f5"; SF="eff1f5"
-fi
+source "$DOTFILES/scripts/.local/bin/catppuccin-palette.sh"
+load_palette "$FLAVOR"
 
-exec wmenu-run -f "monospace 14" -N "$NB" -n "$NF" -S "$SB" -s "$SF" "$@"
+SEL=$(. "$HOME/.config/theme-colors.sh" >/dev/null 2>&1; echo "${PROMPT_HEX:-$accent}")
+SEL="${SEL:-$accent}"
+
+exec wmenu-run -f "monospace 14" \
+    -N "${base#\#}" -n "${text#\#}" \
+    -S "${SEL#\#}" -s "${accent_fg#\#}" "$@"

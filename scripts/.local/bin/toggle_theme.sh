@@ -128,6 +128,10 @@ button { color: ${TEXT}; }
 EOF
 cp "$HOME/.config/gtk-4.0/gtk.css" "$HOME/.config/gtk-3.0/gtk.css"
 
+GTK_THEME_NAME="catppuccin-${FLAVOR}-${ACCENT_CHOICE}-standard+default"
+if [ -d "/usr/share/themes/$GTK_THEME_NAME" ]; then
+    gsettings set org.gnome.desktop.interface gtk-theme "$GTK_THEME_NAME" 2>/dev/null || true
+fi
 gsettings set org.gnome.desktop.interface color-scheme "prefer-${NEW}" 2>/dev/null || true
 
 ZED_SETTINGS="$HOME/.config/zed/settings.json"

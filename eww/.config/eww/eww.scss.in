@@ -27,13 +27,13 @@ label {
 }
 
 .workspace.focused {
-  background-color: ${blue};
-  color: ${base};
+  background-color: ${accent};
+  color: ${accent_fg};
 }
 
 .workspace.urgent {
   background-color: ${red};
-  color: ${base};
+  color: ${accent_fg};
 }
 
 .ws-num {
@@ -41,7 +41,7 @@ label {
 }
 
 .workspace.focused .ws-num {
-  color: ${base};
+  color: ${accent_fg};
 }
 
 .right-modules {
