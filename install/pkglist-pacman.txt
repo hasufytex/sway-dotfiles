@@ -1,89 +1,86 @@
-# Approved native packages — installed by install/setup.sh. One per line; '#' comments and blanks ignored.
-
-git
+# Base & Build
 base-devel
+git
 stow
-nftables
+unzip
+wget
 
+# Kernel & Firmware
 linux-zen
 linux-zen-headers
+linux-firmware
 intel-ucode
 
+# Security & Network
+nftables
+
+# Display & Wayland
 sway
 swaybg
 swayidle
 swaylock
 wmenu
 xorg-xwayland
-grim
-slurp
-wl-clipboard
-dex
+xdg-desktop-portal-wlr
+xdg-utils
 gtk-layer-shell
 qt5-wayland
 qt6-wayland
-xdg-desktop-portal-wlr
-fuzzel
 
-kitty
-bash
-zsh
-bash-completion
-
-noto-fonts
-ttf-jetbrains-mono-nerd
-
-pipewire-pulse
-wireplumber
-pavucontrol
-
-firefox
-discord
-zed
-
+# GPU
 nvidia-open-dkms
 nvidia-settings
 nvidia-utils
 libva-nvidia-driver
 libva-utils
-mangohud
 
-github-cli
-xdg-utils
-unzip
-wget
-htop
-nano
-yazi
-fzf
+# Audio
+pipewire-pulse
+wireplumber
+
+# Fonts
+noto-fonts
+noto-fonts-cjk
+noto-fonts-emoji
+ttf-jetbrains-mono-nerd
+
+# Terminal & Shell
+kitty
+bash
+bash-completion
+tmux
+vim
+
+# CLI Tools
 bat
-jq
-imagemagick
-neovim
-fastfetch
 fd
+fzf
+htop
+jq
+nano
 ripgrep
-luarocks
-tree-sitter-cli
-pnpm
+tree
+yazi
+
+# GUI Apps
+firefox
+zed
+nautilus
+libreoffice-fresh
+qbittorrent
+fastfetch
+
+# Media & Files
+grim
+slurp
+wl-clipboard
+imagemagick
+
+# Languages & Runtimes
 go
+python-pip
+pnpm
 rust
 
-nautilus
+# Themes
 gnome-themes-extra
-
-libreoffice-fresh
-linux-firmware
-ollama-cuda
-python-pip
-python-pipx
-tree
-
-qemu-desktop
-libvirt
-virt-manager
-dnsmasq
-edk2-ovmf
-qbittorrent
-
-adguardhome
