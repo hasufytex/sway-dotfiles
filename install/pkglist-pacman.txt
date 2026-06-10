@@ -55,6 +55,7 @@ vim
 bat
 fd
 fzf
+github-cli
 htop
 jq
 nano
