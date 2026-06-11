@@ -8,7 +8,7 @@ default_floating_border none
 exec /usr/bin/stremio-service
 exec swayidle -w timeout 300 "$HOME/.local/bin/swaylock_themed" before-sleep "$HOME/.local/bin/swaylock_themed"
 
-exec_always ~/.local/bin/eww-bar
+exec_always ~/.local/bin/bar-launch
 exec_always ~/.local/bin/toggle_theme.sh --apply
 
 bindsym XF86AudioRaiseVolume exec pactl set-sink-volume @DEFAULT_SINK@ +10%
@@ -29,7 +29,7 @@ bindsym $mod+e exec nautilus
 
 bindsym $mod+r exec ~/.local/bin/wmenu_themed_run
 bindsym $mod+Shift+t exec ~/.local/bin/toggle_theme.sh
-bindsym $mod+b exec ~/.local/bin/eww-bar-toggle
+bindsym $mod+b exec ~/.local/bin/bar-toggle
 
 bindsym $mod+Shift+s exec ~/.local/bin/screenshot_save_wl.sh
 bindsym $mod+Shift+c exec ~/.local/bin/screenshot_copy_wl.sh

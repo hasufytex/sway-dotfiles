@@ -1,0 +1,4 @@
+#!/bin/bash
+# sway exec_always: kill any existing bar instance and start the installed one.
+pkill -x bar
+exec "$HOME/.local/bin/bar"

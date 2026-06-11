@@ -1,6 +1,7 @@
-# Approved AUR packages — installed by install/setup.sh via yay. (eww is built separately there; yay itself is bootstrapped.)
+# Approved AUR packages — installed by install/setup.sh via yay. (yay itself is bootstrapped.)
 
 sone
+wlr-protocols
 brave-bin
 catppuccin-gtk-theme-mocha
 catppuccin-gtk-theme-latte

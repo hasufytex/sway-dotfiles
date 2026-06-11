@@ -26,13 +26,12 @@ if [ "${#AUR[@]}" -gt 0 ]; then
   yay -S --needed --noconfirm "${AUR[@]}"
 fi
 
-# eww — AUR GPG key import is unreliable; build directly with check skipped
-if ! command -v eww &>/dev/null; then
-  tmpdir=$(mktemp -d)
-  git clone https://aur.archlinux.org/eww.git "$tmpdir/eww"
-  (cd "$tmpdir/eww" && makepkg -si --noconfirm)
-  rm -rf "$tmpdir"
+# Custom C status bar: own repo, cloned once. Never re-cloned or pulled —
+# local changes and git state there belong to the user.
+if [ ! -d "$HOME/bar/.git" ]; then
+  git clone https://github.com/hasufytex/bar.git "$HOME/bar"
 fi
+(cd "$HOME/bar" && make && make install)
 
 # Stow (--adopt absorbs any pre-existing file, e.g. skel's ~/.bashrc; git checkout restores repo content)
 cd "$DOTFILES"

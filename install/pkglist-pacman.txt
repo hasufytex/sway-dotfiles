@@ -15,6 +15,10 @@ intel-ucode
 nftables
 
 # Display & Wayland
+wayland
+cairo
+pango
+cjson
 sway
 swaybg
 swayidle

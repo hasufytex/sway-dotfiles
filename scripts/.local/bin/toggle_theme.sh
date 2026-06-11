@@ -53,8 +53,12 @@ RENDER_VARS="$RENDER_VARS \${accent} \${accent_fg}"
 render "$DOTFILES/sway/.config/sway/theme-${NEW}.conf.in" "$DOTFILES/sway/.config/sway/theme.conf"
 
 render "$HOME/.config/eww/eww.scss.in" "$HOME/.config/eww/eww.scss"
-if [ "$APPLY" -eq 0 ]; then
-    ~/.local/bin/eww-bar &
+
+# Custom C bar: template installed by `make install` in the bar repo; the
+# running bar reloads the rendered file on mtime change, no restart needed
+if [ -f "$HOME/.local/share/bar/theme.conf.in" ]; then
+    mkdir -p "$HOME/.config/bar"
+    render "$HOME/.local/share/bar/theme.conf.in" "$HOME/.config/bar/theme.conf"
 fi
 
 # 3. Render the updated Kitty theme template
