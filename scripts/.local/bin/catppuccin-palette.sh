@@ -8,7 +8,7 @@ load_palette() {
   local flavor="${1:-mocha}"
   # 1. Accept a second argument for the accent, defaulting to blue if left blank
   local accent_choice="${2:-blue}"
-  local json_file="$HOME/my-i3-dotfiles/palette.json"
+  local json_file="$HOME/sway-dotfiles/palette.json"
 
   if [ ! -f "$json_file" ]; then
     echo "load_palette: error, missing $json_file" >&2
