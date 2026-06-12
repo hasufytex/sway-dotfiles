@@ -35,7 +35,7 @@ fi
 
 # Stow (--adopt absorbs any pre-existing file, e.g. skel's ~/.bashrc; git checkout restores repo content)
 cd "$DOTFILES"
-stow --no-folding --adopt bash kitty mpv pipewire scripts sway system-env yazi
+stow --no-folding --adopt bash kitty mpv pipewire scripts sway system-env systemd yazi
 # stow --no-folding --adopt eww
 git checkout -- .
 
@@ -53,6 +53,10 @@ sudo install -Dm644 "$DOTFILES/system/etc/systemd/network/20-wired.network" \
   /etc/systemd/network/20-wired.network
 sudo install -Dm644 "$DOTFILES/system/etc/systemd/resolved.conf" \
   /etc/systemd/resolved.conf
+
+# Firewall ruleset: default-deny inbound (replaces the stock Arch config the
+# nftables package ships).
+sudo install -Dm644 "$DOTFILES/system/etc/nftables.conf" /etc/nftables.conf
 sudo systemctl enable systemd-networkd systemd-networkd-wait-online systemd-resolved
 sudo ln -sf /run/systemd/resolve/stub-resolv.conf /etc/resolv.conf
 
@@ -63,8 +67,9 @@ mkdir -p "$HOME/Downloads"
 echo "dark" > "$HOME/.config/theme-state"
 "$HOME/.local/bin/toggle_theme.sh" --apply || true
 
-# Enable user services (stremio-service is launched in-session via sway `exec`)
+# Enable user services (stremio-service starts with graphical-session.target)
 systemctl --user enable --now pipewire pipewire-pulse wireplumber
+systemctl --user enable stremio-service
 
 # Lock NVIDIA GPU to maximum performance clocks
 sudo systemctl daemon-reload
