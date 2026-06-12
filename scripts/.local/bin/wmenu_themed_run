@@ -1,6 +1,6 @@
 #!/bin/bash
 # Theme-aware wmenu-run launcher (dmenu look); colors follow toggle_theme via the Catppuccin palette.
-DOTFILES="$HOME/my-i3-dotfiles"
+DOTFILES="$HOME/sway-dotfiles"
 STATE=$(cat "$HOME/.config/theme-state" 2>/dev/null || echo dark)
 FLAVOR=$([ "$STATE" = light ] && echo latte || echo mocha)
 
