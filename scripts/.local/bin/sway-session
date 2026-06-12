@@ -9,6 +9,7 @@ export __GL_GSYNC_ALLOWED=1
 export __GL_VRR_ALLOWED=1
 export __GL_SYNC_TO_VBLANK=0
 export MOZ_ENABLE_WAYLAND=1
+export MOZ_DISABLE_RDD_SANDBOX=1   # required by nvidia-vaapi-driver; sandbox blocks NVDEC init
 export QT_QPA_PLATFORM="wayland;xcb"
 export SDL_VIDEODRIVER=wayland
 export _JAVA_AWT_WM_NONREPARENTING=1
