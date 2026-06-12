@@ -91,3 +91,9 @@ rust
 
 # Themes
 gnome-themes-extra
+
+
+base
+sudo
+systemd
+wlr-protocols
