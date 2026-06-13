@@ -23,11 +23,20 @@ alias ll='ls -lah'
 alias la='ls -A'
 alias grep='grep --color=auto'
 export PATH="$HOME/.local/bin:$PATH"
+export EDITOR=nano
+export VISUAL=nano
 
 [ -f ~/.config/theme-colors.sh ] && source ~/.config/theme-colors.sh
 
 [ -f /usr/share/fzf/key-bindings.bash ] && source /usr/share/fzf/key-bindings.bash
 [ -f /usr/share/fzf/completion.bash ]   && source /usr/share/fzf/completion.bash
+
+# fe: fuzzy-find a file and open it in nano on Enter. Optional arg pre-fills the
+# query, e.g. `fe bashrc`.
+fe() {
+    local file
+    file="$(fzf --height=40% --reverse --query="$1")" && [ -n "$file" ] && nano "$file"
+}
 
 y() {
     local tmp_cwd tmp_file choice cwd
@@ -46,7 +55,7 @@ _yazi_chooser_fn() {
     local tmp_cwd tmp_file choice cwd
     tmp_cwd="$(mktemp -t yazi-cwd.XXXXXX)"
     tmp_file="$(mktemp -t yazi-file.XXXXXX)"
-    yazi --cwd-file="$tmp_cwd" --chooser-file="$tmp_file" < /dev/tty
+    YAZI_PICKER=1 YAZI_CHOOSER_FILE="$tmp_file" yazi --cwd-file="$tmp_cwd" --chooser-file="$tmp_file" < /dev/tty
     if choice="$(cat -- "$tmp_file")" && [ -n "$choice" ]; then
         READLINE_LINE="${READLINE_LINE:0:READLINE_POINT}${choice}${READLINE_LINE:READLINE_POINT}"
         READLINE_POINT=$(( READLINE_POINT + ${#choice} ))

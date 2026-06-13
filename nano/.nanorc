@@ -1,0 +1,17 @@
+# nano config. Tuned for the yazi -> edit -> back-to-yazi loop.
+
+# Ctrl+X saves and exits without the "Save modified buffer?" prompt,
+# so quitting nano drops you straight back into yazi in one keystroke.
+set saveonexit
+
+# Ctrl+Q as an alternative one-key quit (saves + exits, same as Ctrl+X).
+bind ^Q exit all
+
+# Editing niceties
+set autoindent
+set tabsize 4
+set linenumbers
+set mouse
+
+# Syntax highlighting from the system definitions
+include /usr/share/nano/*.nanorc
