@@ -54,6 +54,14 @@ stow --no-folding --adopt bash kitty mpv pipewire scripts sway system-env system
 git checkout -- .
 
 # ─────────────────────────────────────────────────────────────────────────────
+# Git config
+# ─────────────────────────────────────────────────────────────────────────────
+
+# `git ask-claude`: generate a one-line commit message from the staged diff via
+# Claude Code, then commit with it.
+git config --global alias.ask-claude '!f() { msg=$(git diff --cached | claude -p "Write a one-line git commit message for this diff in the format: verb: description. Output only the message, nothing else."); git commit -m "$msg"; }; f'
+
+# ─────────────────────────────────────────────────────────────────────────────
 # System files
 #
 # Everything under system/ is copied (not stowed): systemd service users and
