@@ -88,4 +88,9 @@ sudo systemctl enable --now smb avahi-daemon
 sudo systemctl enable --now nftables
 sudo systemctl enable fstrim.timer
 
+# Tailscale mesh VPN. Daemon only; joining the tailnet is a manual one-time step:
+#   sudo tailscale up --ssh --accept-dns=false
+# (interactive auth URL; --accept-dns=false keeps the Cloudflare DoT resolved.conf)
+sudo systemctl enable --now tailscaled
+
 echo "Done. Switch to a TTY and run 'sway-session' to launch sway."

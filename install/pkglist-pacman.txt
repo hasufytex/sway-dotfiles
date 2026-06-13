@@ -15,6 +15,7 @@ intel-ucode
 nftables
 samba
 avahi
+tailscale
 
 # Display & Wayland
 wayland
