@@ -3,3 +3,8 @@
 sone
 wlr-protocols
 stremio-service
+
+# Remote desktop streaming host. Pair from Moonlight on the iPhone over the
+# tailnet (nftables already accepts all tailscale0 inbound). Prebuilt binary
+# ships NVENC + udev rules + the sunshine.service user unit.
+sunshine-bin
