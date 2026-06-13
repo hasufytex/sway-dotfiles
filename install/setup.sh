@@ -46,6 +46,11 @@ sudo install -Dm644 "$DOTFILES/system/usr/lib/firefox/distribution/policies.json
 # swaylock PAM without pam_faillock (no self-lockout at the screen locker).
 sudo install -Dm644 "$DOTFILES/system/etc/pam.d/swaylock" /etc/pam.d/swaylock
 
+# SSH server hardening drop-in (key-only auth) for publicly port-forwarded sshd.
+# Needs ~/.ssh/authorized_keys populated first; Tailscale SSH is unaffected.
+sudo install -Dm644 "$DOTFILES/system/etc/ssh/sshd_config.d/20-hardening.conf" \
+  /etc/ssh/sshd_config.d/20-hardening.conf
+
 # Networking: systemd-networkd (wired DHCP) + resolved (Cloudflare DNS-over-TLS).
 # Copied (not symlinked): the systemd-resolve/-network service users can't read configs under a 0700/0710 home.
 sudo install -Dm644 "$DOTFILES/system/etc/systemd/network/20-wired.network" \
@@ -92,5 +97,8 @@ sudo systemctl enable fstrim.timer
 #   sudo tailscale up --ssh --accept-dns=false
 # (interactive auth URL; --accept-dns=false keeps the Cloudflare DoT resolved.conf)
 sudo systemctl enable --now tailscaled
+
+# SSH server (key-only via the 20-hardening.conf drop-in above)
+sudo systemctl enable --now sshd
 
 echo "Done. Switch to a TTY and run 'sway-session' to launch sway."
