@@ -66,6 +66,7 @@ tmux
 vim
 
 # CLI Tools
+7zip
 bat
 fd
 fzf
