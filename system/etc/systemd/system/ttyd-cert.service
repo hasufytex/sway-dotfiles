@@ -1,0 +1,23 @@
+[Unit]
+Description=Fetch/renew the Tailscale TLS cert for ttyd
+Documentation=https://tailscale.com/kb/1153/enabling-https
+After=tailscaled.service network-online.target
+Wants=tailscaled.service network-online.target
+
+[Service]
+Type=oneshot
+# MagicDNS name of this node (machine-specific, like the LAN subnet in nftables.conf).
+# tailscale cert reuses a still-valid cert and only re-issues when near expiry, so running
+# this on a timer is cheap. Restarts ttyd only if it is already running (no-op at boot,
+# where ttyd starts after this unit anyway).
+#
+# --no-block is required: ttyd.service is ordered After=ttyd-cert.service, so a blocking
+# try-restart here would wait on ttyd's start job while that job waits on this unit to
+# finish activating — a deadlock that hangs both units forever. --no-block enqueues the
+# restart and lets this unit complete first.
+ExecStart=/usr/bin/install -d -m 700 /etc/ttyd
+ExecStart=/usr/bin/tailscale cert --cert-file /etc/ttyd/tls.crt --key-file /etc/ttyd/tls.key arch.tail1de974.ts.net
+ExecStartPost=-/usr/bin/systemctl --no-block try-restart ttyd.service
+
+[Install]
+WantedBy=multi-user.target

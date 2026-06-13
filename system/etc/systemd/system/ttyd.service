@@ -1,16 +1,27 @@
 [Unit]
-Description=ttyd web terminal with PAM login (tailnet-only)
+Description=ttyd web terminal with PAM login (tailnet-only, native TLS)
 Documentation=man:ttyd(1)
-After=network-online.target tailscaled.service
-Wants=network-online.target
+After=network-online.target tailscaled.service ttyd-cert.service
+Wants=network-online.target ttyd-cert.service
 
 [Service]
 # Runs as root so `login` can authenticate (PAM, /etc/pam.d/login) and drop to the user
-# shell — a real username+password prompt, unlike the old user-service bash shell. This is
-# also where Google Authenticator TOTP plugs in later (pam_google_authenticator on a
-# dedicated PAM stack). Bound to localhost only; `tailscale serve` fronts it with HTTPS on
-# the tailnet (valid auto-renewing cert), so ttyd is never exposed plaintext. -W allows input.
-ExecStart=/usr/bin/ttyd -i 127.0.0.1 -p 7681 -W login
+# shell — a real username+password prompt. This is also where Google Authenticator TOTP
+# plugs in later (pam_google_authenticator on a dedicated PAM stack).
+#
+# Serves HTTPS itself (-S, ttyd's own TLS) using a Tailscale-issued Let's Encrypt cert,
+# bound to the Tailscale IP:443 (resolved at runtime; machine-independent). No reverse proxy
+# in front — `tailscale serve` buffered ttyd's interactive output and the login prompt never
+# rendered; serving TLS directly streams the PTY correctly. ttyd-cert.{service,timer} keep
+# the 90-day cert renewed. -W allows input.
+#
+# `login` writes its single `arch login:` prompt the instant it starts, then blocks on input
+# and never writes again. If xterm.js in the browser hasn't finished attaching when those
+# bytes arrive, the prompt is dropped and the terminal stays blank until a keypress forces
+# login to re-emit. The `sleep 0.3; exec login` wrapper delays that first write until after
+# the client is ready, so the prompt renders reliably. exec keeps login as the PTY session
+# leader (root, PAM intact) with no extra shell left in the auth path.
+ExecStart=/bin/sh -c 'exec ttyd -i "$(tailscale ip -4)" -p 443 -S -C /etc/ttyd/tls.crt -K /etc/ttyd/tls.key -W /bin/sh -c "sleep 0.3; exec login"'
 Restart=on-failure
 RestartSec=3
 

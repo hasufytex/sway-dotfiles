@@ -43,9 +43,13 @@ sudo cp "$DOTFILES/system/etc/systemd/system/nvidia-max-perf.service" /etc/syste
 sudo install -Dm644 "$DOTFILES/system/usr/lib/firefox/distribution/policies.json" \
   /usr/lib/firefox/distribution/policies.json
 
-# ttyd web terminal: root system service running `login` (PAM auth) on the tailnet IP.
-# Bind needs the tailnet, so it only starts cleanly after `tailscale up` (Restart handles it).
+# ttyd web terminal: root system service running `login` (PAM auth), serving HTTPS on the
+# tailnet IP:443 with a Tailscale-issued cert (renewed by ttyd-cert.timer). Only starts
+# cleanly after `tailscale up` + MagicDNS/HTTPS enabled in the admin console (Restart handles
+# the wait). The cert units must exist before ttyd is enabled below.
 sudo cp "$DOTFILES/system/etc/systemd/system/ttyd.service" /etc/systemd/system/
+sudo cp "$DOTFILES/system/etc/systemd/system/ttyd-cert.service" /etc/systemd/system/
+sudo cp "$DOTFILES/system/etc/systemd/system/ttyd-cert.timer" /etc/systemd/system/
 
 # swaylock PAM without pam_faillock (no self-lockout at the screen locker).
 sudo install -Dm644 "$DOTFILES/system/etc/pam.d/swaylock" /etc/pam.d/swaylock
@@ -97,7 +101,8 @@ sudo systemctl enable fstrim.timer
 # (interactive auth URL; --accept-dns=false keeps the Cloudflare DoT resolved.conf)
 sudo systemctl enable --now tailscaled
 
-# Web terminal (enabled here; starts once the tailnet IP exists, i.e. after `tailscale up`).
-sudo systemctl enable ttyd
+# Web terminal + its TLS cert renewal (start once the tailnet IP exists, i.e. after
+# `tailscale up` and MagicDNS/HTTPS are enabled for the tailnet).
+sudo systemctl enable ttyd ttyd-cert.timer
 
 echo "Done. Switch to a TTY and run 'sway-session' to launch sway."
