@@ -1,12 +1,11 @@
-# systemd-networkd: wired static IP so the router's port-forward (e.g. SSH) always
-# targets a fixed internal address — the router can't set DHCP reservations, so the
-# PC pins its own IP. .250 sits above the typical DHCP pool to avoid lease conflicts.
-# DNS is left to resolved's global Cloudflare DoT. Symlinked into /etc/systemd/network/ by setup.sh.
+# systemd-networkd: wired DHCP for the address only; DHCP-provided DNS is ignored so resolved's global Cloudflare DoT is used. Symlinked into /etc/systemd/network/ by setup.sh.
 [Match]
 Name=e**
 
 [Network]
-Address=192.168.100.250/24
-Gateway=192.168.100.1
+DHCP=yes
 LinkLocalAddressing=no
 IPv6AcceptRA=no
+
+[DHCPv4]
+UseDNS=no
