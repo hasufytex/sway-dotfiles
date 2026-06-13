@@ -14,4 +14,8 @@ export QT_QPA_PLATFORM="wayland;xcb"
 export SDL_VIDEODRIVER=wayland
 export _JAVA_AWT_WM_NONREPARENTING=1
 export ELECTRON_OZONE_PLATFORM_HINT=auto
-exec sway --unsupported-gpu
+sway --unsupported-gpu
+# Tear down session units (graphical-session.target stops everything PartOf it),
+# so the next login re-activates them instead of no-opping on still-active targets.
+systemctl --user stop graphical-session.target sway-session.target
+systemctl --user unset-environment WAYLAND_DISPLAY

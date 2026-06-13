@@ -7,8 +7,6 @@ default_floating_border none
 
 exec dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=sway
 exec systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP && systemctl --user start sway-session.target
-
-exec /usr/bin/stremio-service
 exec swayidle -w timeout 300 "$HOME/.local/bin/swaylock_themed" before-sleep "$HOME/.local/bin/swaylock_themed"
 
 exec_always ~/.local/bin/bar-launch
