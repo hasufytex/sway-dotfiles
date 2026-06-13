@@ -21,7 +21,8 @@ start() {
 }
 
 stop() {
-  sudo systemctl stop $UNITS
+  # Also stop avahi-daemon.socket, else socket activation restarts the service.
+  sudo systemctl stop $UNITS avahi-daemon.socket
   say "share off"
 }
 
