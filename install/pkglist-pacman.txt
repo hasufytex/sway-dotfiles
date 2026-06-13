@@ -13,6 +13,8 @@ intel-ucode
 
 # Security & Network
 nftables
+samba
+avahi
 
 # Display & Wayland
 wayland

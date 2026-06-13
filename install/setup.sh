@@ -54,6 +54,13 @@ sudo install -Dm644 "$DOTFILES/system/etc/systemd/network/20-wired.network" \
 sudo install -Dm644 "$DOTFILES/system/etc/systemd/resolved.conf" \
   /etc/systemd/resolved.conf
 
+# File sharing: Samba (Arch ships no smb.conf) + Avahi mDNS advertisement.
+# The share dir must be writable by the connecting user; LAN is trusted by nftables.
+sudo install -Dm644 "$DOTFILES/system/etc/samba/smb.conf" /etc/samba/smb.conf
+sudo install -Dm644 "$DOTFILES/system/etc/avahi/services/smb.service" \
+  /etc/avahi/services/smb.service
+sudo install -d -o "$USER" -g "$USER" /srv/samba/phone
+
 # Firewall ruleset: default-deny inbound (replaces the stock Arch config the
 # nftables package ships).
 sudo install -Dm644 "$DOTFILES/system/etc/nftables.conf" /etc/nftables.conf
@@ -74,6 +81,9 @@ systemctl --user enable stremio-service
 # Lock NVIDIA GPU to maximum performance clocks
 sudo systemctl daemon-reload
 sudo systemctl enable --now nvidia-max-perf
+
+# File sharing (smb = smbd; skip nmb, iOS uses mDNS not NetBIOS)
+sudo systemctl enable --now smb avahi-daemon
 
 # Firewall + SSD trim
 sudo systemctl enable --now nftables
