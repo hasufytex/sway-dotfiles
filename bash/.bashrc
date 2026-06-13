@@ -18,7 +18,7 @@ bind '"\e[Z": menu-complete-backward'
 
 PS1='\[${PS1_COLOR}\]\w\[\e[0m\] '
 
-alias ls='ls --group-directories-first --color=auto'
+alias ls='ls -1 --group-directories-first --color=auto'
 alias ll='ls -lah'
 alias la='ls -A'
 alias grep='grep --color=auto'
