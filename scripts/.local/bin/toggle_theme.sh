@@ -98,6 +98,52 @@ TEXTCLEAR="${sl_yellow}"
 CAPS="${sl_yellow}"
 EOF
 
+# Vesktop (Discord): import the matching catppuccin flavor/accent. The dist
+# ships every catppuccin-<flavor>-<accent> combo, so this tracks DARK_FLAVOR /
+# ACCENT_CHOICE automatically and the imported base matches the bar/terminal.
+# Vesktop live-reloads quickCss on mtime change, so no restart is needed. Only
+# the marked block is managed; any custom QuickCSS below it is preserved.
+VESKTOP_CSS="$HOME/.config/vesktop/settings/quickCss.css"
+if [ -d "${VESKTOP_CSS%/*}" ]; then
+    # Drop the previous managed block and any stale discord import, keeping the
+    # user's own CSS; the @import must stay first, so the managed block leads.
+    REST=""
+    [ -f "$VESKTOP_CSS" ] && REST=$(sed \
+        -e '/>>> toggle_theme managed >>>/,/<<< toggle_theme managed <<</d' \
+        -e '\#catppuccin.github.io/discord/dist#d' "$VESKTOP_CSS")
+    {
+        printf '/* >>> toggle_theme managed >>> */\n'
+        printf '@import url("https://catppuccin.github.io/discord/dist/catppuccin-%s-%s.theme.css");\n' "$FLAVOR" "$ACCENT_CHOICE"
+        # Flatten Discord's background tokens onto the palette so the whole app
+        # is the exact terminal/bar base. The chat pane reads base-lower and the
+        # sidebars/server-rail/body read base-lowest, so pinning all base-* (plus
+        # the legacy primary/secondary/tertiary) to ${base} gives one flat color
+        # regardless of Discord's appearance (Dark/Darker/Midnight). Floating
+        # popouts stay on crust so modals/menus read against the flat base.
+        cat <<CSS
+.theme-light, .theme-dark, .theme-darker, .theme-midnight,
+.visual-refresh.theme-light, .visual-refresh.theme-dark,
+.visual-refresh.theme-darker, .visual-refresh.theme-midnight {
+  --background-base-low: ${base} !important;
+  --background-base-lower: ${base} !important;
+  --background-base-lowest: ${base} !important;
+  --background-secondary-alt: ${base} !important;
+  --background-surface-high: ${surface0} !important;
+  --background-surface-higher: ${surface0} !important;
+  --background-surface-highest: ${surface1} !important;
+  --bg-surface-raised: ${base} !important;
+  --background-primary: ${base} !important;
+  --background-secondary: ${base} !important;
+  --background-tertiary: ${base} !important;
+  --background-floating: ${crust} !important;
+  --app-frame-background: ${base} !important;
+}
+CSS
+        printf '/* <<< toggle_theme managed <<< */\n'
+        printf '%s' "$REST"
+    } > "$VESKTOP_CSS"
+fi
+
 if [ -f "$WALLPAPER" ]; then
     swaymsg output "*" bg "$WALLPAPER" fill >/dev/null 2>&1 || true
 fi
