@@ -2,7 +2,4 @@
 
 sone
 wlr-protocols
-brave-bin
-catppuccin-gtk-theme-mocha
-catppuccin-gtk-theme-latte
 stremio-service

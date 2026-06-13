@@ -36,7 +36,6 @@ fi
 # Stow (--adopt absorbs any pre-existing file, e.g. skel's ~/.bashrc; git checkout restores repo content)
 cd "$DOTFILES"
 stow --no-folding --adopt bash kitty mpv pipewire scripts sway system-env systemd yazi
-# stow --no-folding --adopt eww
 git checkout -- .
 
 # System files (tracked under system/): nvidia max-perf service + firefox VAAPI policy
