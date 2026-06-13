@@ -4,6 +4,5 @@ sway/.config/sway/theme.conf
 kitty/.config/kitty/theme.conf
 kitty/.config/kitty/kitty.conf.bak
 yazi/.config/yazi/theme.toml
-eww/.config/eww/eww.scss
 .claude/
 CLAUDE.md

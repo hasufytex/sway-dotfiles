@@ -1,6 +1,0 @@
-#!/bin/bash
-# Kills any existing eww instance and starts the daemon. The bar starts hidden;
-# toggle it with $mod+b (see eww-bar-toggle).
-eww kill 2>/dev/null
-sleep 0.5
-eww daemon &

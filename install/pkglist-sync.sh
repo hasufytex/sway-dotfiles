@@ -21,7 +21,7 @@ expand_groups() {
 approved_pac=$(read_list pkglist-pacman.txt | expand_groups | sort -u)
 approved_aur=$(read_list pkglist-aur.txt | sort -u)
 exp_pac=$(pacman -Qqen | sort -u)
-exp_aur=$(pacman -Qqem | grep -vxE 'yay|eww' | sort -u)   # yay + eww are built directly in setup.sh, not approved-listed
+exp_aur=$(pacman -Qqem | grep -vx 'yay' | sort -u)   # yay is built directly in setup.sh, not approved-listed
 
 pending_pac=$(comm -23 <(echo "$exp_pac") <(echo "$approved_pac"))
 pending_aur=$(comm -23 <(echo "$exp_aur") <(echo "$approved_aur"))

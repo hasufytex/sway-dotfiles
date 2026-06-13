@@ -1,5 +1,5 @@
 #!/bin/bash
-# Dark/light theme toggle: sway, eww, kitty, yazi, GTK, fzf/bat, Claude Code.
+# Dark/light theme toggle: sway, kitty, yazi, GTK, fzf/bat, Claude Code.
 # Usage: toggle_theme.sh [--apply]  (--apply re-applies without flipping)
 set -u
 
@@ -49,10 +49,8 @@ render() { envsubst "$RENDER_VARS" < "$1" > "$2"; }
 RENDER_VARS=$(printf '${%s} ' "${CATPPUCCIN_NAMES[@]}")
 RENDER_VARS="$RENDER_VARS \${accent} \${accent_fg}"
 
-# 2. Render Sway and Eww as normal
+# 2. Render Sway
 render "$DOTFILES/sway/.config/sway/theme-${NEW}.conf.in" "$DOTFILES/sway/.config/sway/theme.conf"
-
-render "$HOME/.config/eww/eww.scss.in" "$HOME/.config/eww/eww.scss"
 
 # Custom C bar: template installed by `make install` in the bar repo; the
 # running bar reloads the rendered file on mtime change, no restart needed

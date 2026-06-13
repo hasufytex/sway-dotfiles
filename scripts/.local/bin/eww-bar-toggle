@@ -1,7 +1,0 @@
-#!/bin/bash
-# $mod+b: toggle the eww bar on/off.
-if eww active-windows | grep -q '^bar'; then
-  eww close bar
-else
-  eww open bar
-fi
