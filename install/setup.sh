@@ -43,6 +43,10 @@ sudo cp "$DOTFILES/system/etc/systemd/system/nvidia-max-perf.service" /etc/syste
 sudo install -Dm644 "$DOTFILES/system/usr/lib/firefox/distribution/policies.json" \
   /usr/lib/firefox/distribution/policies.json
 
+# ttyd web terminal: root system service running `login` (PAM auth) on the tailnet IP.
+# Bind needs the tailnet, so it only starts cleanly after `tailscale up` (Restart handles it).
+sudo cp "$DOTFILES/system/etc/systemd/system/ttyd.service" /etc/systemd/system/
+
 # swaylock PAM without pam_faillock (no self-lockout at the screen locker).
 sudo install -Dm644 "$DOTFILES/system/etc/pam.d/swaylock" /etc/pam.d/swaylock
 
@@ -92,5 +96,8 @@ sudo systemctl enable fstrim.timer
 #   sudo tailscale up --ssh --accept-dns=false
 # (interactive auth URL; --accept-dns=false keeps the Cloudflare DoT resolved.conf)
 sudo systemctl enable --now tailscaled
+
+# Web terminal (enabled here; starts once the tailnet IP exists, i.e. after `tailscale up`).
+sudo systemctl enable ttyd
 
 echo "Done. Switch to a TTY and run 'sway-session' to launch sway."

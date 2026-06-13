@@ -1,0 +1,17 @@
+[Unit]
+Description=wayvnc VNC server for the sway session (tailnet-only)
+Documentation=man:wayvnc(1)
+# Tied to the graphical session: there is nothing to capture without sway running.
+PartOf=graphical-session.target
+After=graphical-session.target
+
+[Service]
+# Bind to the Tailscale IP (resolved at runtime so the unit stays machine-independent).
+# nftables accepts all tailscale0 inbound, so only tailnet peers (incl. the VPS edge)
+# can reach this; never bound to 0.0.0.0. Auth/TLS is enforced at the VPS edge.
+ExecStart=/bin/sh -c 'exec wayvnc "$(tailscale ip -4)" 5900'
+Restart=on-failure
+RestartSec=3
+
+[Install]
+WantedBy=graphical-session.target

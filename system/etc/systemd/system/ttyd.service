@@ -1,0 +1,18 @@
+[Unit]
+Description=ttyd web terminal with PAM login (tailnet-only)
+Documentation=man:ttyd(1)
+After=network-online.target tailscaled.service
+Wants=network-online.target
+
+[Service]
+# Runs as root so `login` can authenticate (PAM, /etc/pam.d/login) and drop to the user
+# shell — a real username+password prompt, unlike the old user-service bash shell. This is
+# also where Google Authenticator TOTP plugs in later (pam_google_authenticator on a
+# dedicated PAM stack). Bound to localhost only; `tailscale serve` fronts it with HTTPS on
+# the tailnet (valid auto-renewing cert), so ttyd is never exposed plaintext. -W allows input.
+ExecStart=/usr/bin/ttyd -i 127.0.0.1 -p 7681 -W login
+Restart=on-failure
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target

@@ -17,6 +17,12 @@ samba
 avahi
 tailscale
 
+# Remote access (tailnet-only; reached from the VPS edge over Tailscale)
+# wayvnc: wlroots VNC server for the live sway session (browser desktop via noVNC on the VPS)
+# ttyd:   web terminal serving a login shell (browser SSH via the VPS)
+wayvnc
+ttyd
+
 # Display & Wayland
 wayland
 cairo
