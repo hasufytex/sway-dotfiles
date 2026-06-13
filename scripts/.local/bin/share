@@ -1,26 +1,34 @@
 #!/bin/sh
-# Toggle the SMB file share (smbd + avahi mDNS) on demand. Usage: share on|off|status
+# Toggle the SMB file share (smbd + avahi mDNS) on demand.
+# No arg = toggle (handy from wmenu). Usage: share [on|off|toggle|status]
 set -eu
 
 UNITS="smb avahi-daemon"
 
-case "${1:-status}" in
-  on)
-    sudo systemctl start $UNITS
-    ip=$(ip -4 -o addr show eno1 | awk '{print $4}' | cut -d/ -f1)
-    echo "share on  ->  smb://${ip:-<ip>}  (user: $USER, dir: /srv/samba/phone)"
-    ;;
-  off)
-    sudo systemctl stop $UNITS
-    echo "share off"
-    ;;
-  status)
-    for u in $UNITS; do
-      printf '%-14s %s\n' "$u" "$(systemctl is-active "$u")"
-    done
-    ;;
-  *)
-    echo "usage: share on|off|status" >&2
-    exit 1
-    ;;
+# Print to the terminal if interactive, else desktop-notify (for wmenu launches).
+say() {
+  if [ -t 1 ]; then
+    echo "$1"
+  elif command -v notify-send >/dev/null 2>&1; then
+    notify-send "share" "$1"
+  fi
+}
+
+start() {
+  sudo systemctl start $UNITS
+  ip=$(ip -4 -o addr show eno1 | awk '{print $4}' | cut -d/ -f1)
+  say "share on  ->  smb://${ip:-<ip>}  (user: $USER, dir: /srv/samba/phone)"
+}
+
+stop() {
+  sudo systemctl stop $UNITS
+  say "share off"
+}
+
+case "${1:-toggle}" in
+  on)     start ;;
+  off)    stop ;;
+  toggle) if systemctl is-active --quiet smb; then stop; else start; fi ;;
+  status) for u in $UNITS; do printf '%-14s %s\n' "$u" "$(systemctl is-active "$u")"; done ;;
+  *)      echo "usage: share [on|off|toggle|status]" >&2; exit 1 ;;
 esac
