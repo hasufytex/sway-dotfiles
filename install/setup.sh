@@ -107,6 +107,18 @@ sudo install -d -o "$USER" -g "$USER" /srv/samba/phone
 # package ships).
 sudo install -Dm644 "$DOTFILES/system/etc/nftables.conf" /etc/nftables.conf
 
+# Swap: a 16 GiB disk swapfile as an OOM fallback. Created here (binary, can't be
+# tracked in git); swappiness=10 keeps it idle until RAM is nearly exhausted.
+if ! swapon --show=NAME --noheadings | grep -qx /swapfile; then
+  if [ ! -f /swapfile ]; then
+    sudo fallocate -l 16G /swapfile        # ext4: fallocate is safe for swap
+    sudo chmod 600 /swapfile
+    sudo mkswap /swapfile
+  fi
+fi
+sudo install -Dm644 "$DOTFILES/system/etc/sysctl.d/99-swap.conf" /etc/sysctl.d/99-swap.conf
+sudo install -Dm644 "$DOTFILES/system/etc/systemd/system/swapfile.swap" /etc/systemd/system/swapfile.swap
+
 # ─────────────────────────────────────────────────────────────────────────────
 # Local state & theme
 # ─────────────────────────────────────────────────────────────────────────────
@@ -124,6 +136,10 @@ echo "dark" > "$HOME/.config/theme-state"
 
 # Pick up the unit files copied above.
 sudo systemctl daemon-reload
+
+# Apply swappiness now and activate the fallback swapfile.
+sudo sysctl --system >/dev/null
+sudo systemctl enable --now swapfile.swap
 
 # Networking: bring up networkd + resolved, and point resolv.conf at the resolved
 # stub so DNS goes through the Cloudflare DoT config.
