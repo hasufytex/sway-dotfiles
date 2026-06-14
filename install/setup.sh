@@ -71,6 +71,13 @@ git config --global alias.ask-claude '!f() { msg=$(git diff --cached | claude -p
 # GPU: pin NVIDIA to maximum performance clocks (service enabled further below).
 sudo cp "$DOTFILES/system/etc/systemd/system/nvidia-max-perf.service" /etc/systemd/system/
 
+# Boot/initramfs: install the mkinitcpio config (no `kms` hook, empty MODULES) and
+# rebuild, so the proprietary-nvidia GSP firmware never gets bundled into the 196M
+# /boot. The kernel package already built an initramfs with the stock config during
+# package install above, so a regeneration here is required for the change to apply.
+sudo install -Dm644 "$DOTFILES/system/etc/mkinitcpio.conf" /etc/mkinitcpio.conf
+sudo mkinitcpio -P
+
 # Firefox: enterprise policy enabling hardware-accelerated video (VAAPI).
 sudo install -Dm644 "$DOTFILES/system/usr/lib/firefox/distribution/policies.json" /usr/lib/firefox/distribution/policies.json
 
