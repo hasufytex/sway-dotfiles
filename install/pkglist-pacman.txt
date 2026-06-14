@@ -1,6 +1,7 @@
 # Base & Build
 base-devel
 git
+pacman-contrib
 stow
 unzip
 wget

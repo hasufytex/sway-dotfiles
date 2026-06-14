@@ -144,6 +144,10 @@ sudo systemctl enable --now smb avahi-daemon
 sudo systemctl enable --now nftables
 sudo systemctl enable fstrim.timer
 
+# Periodic pacman cache cleanup (paccache, from pacman-contrib): keeps the last 3
+# versions of each package weekly, so the cache can't grow unbounded again.
+sudo systemctl enable --now paccache.timer
+
 # Tailscale mesh VPN. Daemon only; joining the tailnet is a manual one-time step:
 #   sudo tailscale up --ssh --accept-dns=false
 # (interactive auth URL; --accept-dns=false keeps the Cloudflare DoT resolved.conf)
