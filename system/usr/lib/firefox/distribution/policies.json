@@ -3,7 +3,17 @@
     "Preferences": {
       "media.ffmpeg.vaapi.enabled": { "Value": true, "Status": "default" },
       "media.hardware-video-decoding.enabled": { "Value": true, "Status": "default" },
-      "media.hardware-video-decoding.force-enabled": { "Value": true, "Status": "default" }
+      "media.hardware-video-decoding.force-enabled": { "Value": true, "Status": "default" },
+
+      "browser.tabs.unloadOnLowMemory": { "Value": false, "Status": "default" },
+      "browser.tabs.min_inactive_duration_before_unload": { "Value": 3600000, "Status": "default" },
+      "browser.sessionstore.restore_on_demand": { "Value": false, "Status": "default" },
+      "browser.sessionstore.restore_tabs_lazily": { "Value": false, "Status": "default" },
+
+      "browser.cache.memory.enable": { "Value": true, "Status": "default" },
+      "browser.cache.memory.capacity": { "Value": 1048576, "Status": "default" },
+      "media.memory_cache_max_size": { "Value": 1048576, "Status": "default" },
+      "browser.cache.disk.enable": { "Value": false, "Status": "default" }
     }
   }
 }
