@@ -112,3 +112,8 @@ bind '"\ef":"fcd\n"'
 export PATH=/home/hasu/.opencode/bin:$PATH
 
 alias claude="claude --dangerously-skip-permissions"
+export PATH="$HOME/.local/npm/bin:$PATH"
+
+# >>> Codex installer >>>
+export PATH="/home/hasu/.local/bin:$PATH"
+# <<< Codex installer <<<
