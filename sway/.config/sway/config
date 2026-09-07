@@ -12,7 +12,7 @@ exec gentoo-pipewire-launcher restart
 exec /usr/libexec/xdg-desktop-portal-wlr
 exec /usr/libexec/xdg-desktop-portal
 
-exec swayidle -w timeout 600 swaylock before-sleep swaylock
+# exec swayidle -w timeout 600 swaylock before-sleep swaylock
 
 bindsym XF86AudioRaiseVolume exec pactl set-sink-volume @DEFAULT_SINK@ +10%
 bindsym XF86AudioLowerVolume exec pactl set-sink-volume @DEFAULT_SINK@ -10%
@@ -31,7 +31,6 @@ bindsym $mod+r exec wmenu-run -f "Liberation Mono 16" -N "#222222" -n "#888888" 
 bindsym $mod+b exec ~/.local/bin/bar-toggle
 
 bindsym --no-repeat $mod+Shift+s exec ~/.local/bin/screenshot_save_wl.sh
-bindsym --no-repeat $mod+Shift+c exec ~/.local/bin/screenshot_copy_wl.sh
 bindsym --no-repeat $mod+Shift+f exec ~/.local/bin/screenshot_fullscreen_wl.sh
 
 bindsym $mod+p floating toggle
@@ -108,9 +107,9 @@ output DP-3 adaptive_sync off
 input type:keyboard {
     xkb_layout "us,bg"
     xkb_variant ",phonetic"
-    xkb_options "grp:win_space_toggle"
-    repeat_delay 200
-    repeat_rate 50
+    xkb_options "grp:alt_shift_toggle"
+    repeat_delay 350
+    repeat_rate 20
 }
 
 input type:pointer {
