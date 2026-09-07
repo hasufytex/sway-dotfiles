@@ -14,4 +14,10 @@ export QT_QPA_PLATFORM="wayland;xcb"
 export SDL_VIDEODRIVER=wayland
 export _JAVA_AWT_WM_NONREPARENTING=1
 export ELECTRON_OZONE_PLATFORM_HINT=auto
-sway --unsupported-gpu
+# Initialize the PAM-unlocked keyring after creating the desktop session bus.
+exec dbus-run-session -- sh -c '
+    keyring_env=$(gnome-keyring-daemon --start --components=pkcs11,secrets,ssh) || exit
+    eval "$keyring_env"
+    export GNOME_KEYRING_CONTROL SSH_AUTH_SOCK
+    exec sway --unsupported-gpu "$@"
+' sway-session "$@"
