@@ -1,2 +1,4 @@
 #!/bin/sh
 nvidia-smi -pm 1
+nvidia-smi --lock-gpu-clocks=2145,2145
+nvidia-smi --lock-memory-clocks=7501,7501

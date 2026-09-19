@@ -21,6 +21,9 @@ bindsym XF86AudioMicMute exec pactl set-source-mute @DEFAULT_SOURCE@ toggle
 
 set $mod Mod4
 
+# Toggle between the current and previous workspace.
+bindsym --no-repeat Mod1+Tab exec ~/.local/bin/sway-workspace-cycle
+
 floating_modifier $mod
 tiling_drag enable
 
