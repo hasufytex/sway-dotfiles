@@ -59,7 +59,7 @@ bindsym $mod+a focus parent
 bindsym $mod+Shift+minus move scratchpad
 bindsym $mod+minus scratchpad show
 
-bindsym $mod+l exec swaylock
+bindsym --no-repeat $mod+l exec swaylock -f && loginctl suspend
 
 set $ws1 "1"
 set $ws2 "2"
