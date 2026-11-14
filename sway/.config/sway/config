@@ -56,7 +56,8 @@ bindsym $mod+w split layout tabbed
 
 bindsym $mod+a focus parent
 
-bindsym $mod+Shift+minus move scratchpad
+# Add one scratchpad window and keep it shown; press again to hide it.
+bindsym --no-repeat $mod+Shift+minus exec ~/.local/bin/sway-scratchpad-single
 bindsym $mod+minus scratchpad show
 
 bindsym --no-repeat $mod+l exec swaylock -f && loginctl suspend
