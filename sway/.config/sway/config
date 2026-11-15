@@ -1,5 +1,3 @@
-font pango:monospace, Symbols Nerd Font 16
-
 default_border none
 default_floating_border none
 
@@ -12,7 +10,7 @@ exec gentoo-pipewire-launcher restart
 exec /usr/libexec/xdg-desktop-portal-wlr
 exec /usr/libexec/xdg-desktop-portal
 
-# exec swayidle -w timeout 600 swaylock before-sleep swaylock
+exec swayidle -w timeout 600 'swaylock -f' before-sleep 'swaylock -f'
 
 bindsym XF86AudioRaiseVolume exec pactl set-sink-volume @DEFAULT_SINK@ +10%
 bindsym XF86AudioLowerVolume exec pactl set-sink-volume @DEFAULT_SINK@ -10%
@@ -21,8 +19,7 @@ bindsym XF86AudioMicMute exec pactl set-source-mute @DEFAULT_SOURCE@ toggle
 
 set $mod Mod4
 
-# Toggle between the current and previous workspace.
-bindsym --no-repeat Mod1+Tab exec ~/.local/bin/sway-workspace-cycle
+bindsym --no-repeat Mod1+Tab workspace back_and_forth
 
 floating_modifier $mod
 tiling_drag enable
@@ -56,11 +53,10 @@ bindsym $mod+w split layout tabbed
 
 bindsym $mod+a focus parent
 
-# Add one scratchpad window and keep it shown; press again to hide it.
-bindsym --no-repeat $mod+Shift+minus exec ~/.local/bin/sway-scratchpad-single
+bindsym --no-repeat $mod+Shift+minus move scratchpad
 bindsym $mod+minus scratchpad show
 
-bindsym --no-repeat $mod+l exec swaylock -f && loginctl suspend
+bindsym --no-repeat $mod+l exec swaylock -f
 
 set $ws1 "1"
 set $ws2 "2"
@@ -106,7 +102,7 @@ mode "resize" {
 bindsym $mod+Ctrl+r mode "resize"
 
 output DP-3 mode 2560x1440@170Hz
-output DP-3 adaptive_sync off
+output DP-3 adaptive_sync on
 
 input type:keyboard {
     xkb_layout "us,bg"

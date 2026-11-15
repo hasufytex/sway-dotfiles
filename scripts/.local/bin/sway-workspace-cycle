@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-
-exec swaymsg workspace back_and_forth
