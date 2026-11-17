@@ -1,0 +1,32 @@
+#!/bin/sh
+# Launch sway with Wayland env. Run from a TTY: sway-session
+#
+# Uses ~/.config/sway/config when the user has one, otherwise the system-wide
+# /usr/local/etc/sway/config. Hardware-specific env (GPU driver variables,
+# extra sway flags in SWAY_FLAGS) comes from /usr/local/etc/desktop-session.d.
+export XDG_SESSION_TYPE=wayland
+export XDG_CURRENT_DESKTOP=sway
+export MOZ_ENABLE_WAYLAND=1
+export QT_QPA_PLATFORM="wayland;xcb"
+export QT_QPA_PLATFORMTHEME=kde   # Qt apps read kdeglobals (Breeze Dark)
+export SDL_VIDEODRIVER=wayland
+export _JAVA_AWT_WM_NONREPARENTING=1
+export ELECTRON_OZONE_PLATFORM_HINT=auto
+
+SWAY_FLAGS=
+for f in /usr/local/etc/desktop-session.d/*.sh; do
+    [ -r "$f" ] && . "$f"
+done
+
+config="${XDG_CONFIG_HOME:-$HOME/.config}/sway/config"
+[ -e "$config" ] || config=/usr/local/etc/sway/config
+
+# Initialize the PAM-unlocked keyring after creating the desktop session bus.
+# SWAY_FLAGS is split into words on purpose.
+# shellcheck disable=SC2086
+exec dbus-run-session -- sh -c '
+    keyring_env=$(gnome-keyring-daemon --start --components=pkcs11,secrets,ssh) || exit
+    eval "$keyring_env"
+    export GNOME_KEYRING_CONTROL SSH_AUTH_SOCK
+    exec sway "$@"
+' sway-session $SWAY_FLAGS -c "$config" "$@"

@@ -1,0 +1,7 @@
+#!/bin/sh
+# $mod+b: toggle this user's bar on/off (other users' bars are left alone).
+if pgrep -x -U "$(id -u)" bar >/dev/null; then
+  pkill -x -U "$(id -u)" bar
+else
+  bar &
+fi

@@ -1,7 +1,0 @@
-#!/bin/bash
-# $mod+b: toggle the custom C bar on/off.
-if pgrep -x bar >/dev/null; then
-  pkill -x bar
-else
-  "$HOME/.local/bin/bar" &
-fi
