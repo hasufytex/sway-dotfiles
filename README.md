@@ -15,7 +15,7 @@ Each layer is a mirror of `/`:
 
 | Layer | Used on | Holds |
 | --- | --- | --- |
-| `common/` | every machine | sway config, scripts, theming, skel |
+| `common/` | every machine | sway config, scripts, theming |
 | `distros/<ID>/` | `ID` from `/etc/os-release` | how the distro starts session services |
 | `hosts/<hostname>/` | `uname -n` | monitor outputs, GPU env, audio interface |
 
@@ -31,7 +31,6 @@ Where things end up:
 | `/etc/xdg/kdeglobals`, `/etc/xdg/mimeapps.list` | Breeze Dark for Qt apps, Firefox as default browser |
 | `/etc/swaylock/config`, `/etc/fonts/local.conf`, `/etc/mpv/mpv.conf` | lock colour, font rendering, mpv |
 | `/etc/pipewire/…`, `/etc/wireplumber/…` | PipeWire and WirePlumber drop-ins |
-| `/etc/skel/.bashrc`, `/etc/skel/.bash_profile` | copied into new homes (`~/.local/bin` on `PATH`) |
 | `/usr/local/share/sway-dotfiles/sunshine.conf` | opt-in Sunshine snippet (see below) |
 
 Lookup order is always: the user's own `~/.config` first, then these
@@ -45,14 +44,17 @@ sudo ./install.sh --dry-run   # show what would change
 sudo ./install.sh
 ```
 
-Everything except `etc/skel/` becomes a relative symlink into the repo, so
-editing the repo changes every user's desktop immediately (sway: run
-`swaymsg reload` or log in again). Skel files are copied, because each new user
-must own their copy. A file that is replaced is kept under
-`/var/lib/sway-dotfiles/backup/<path>`, not next to it (`/etc/skel` is copied
-whole into new homes, and `config.d/*` globs would load it). On Gentoo that is
-only the two `/etc/skel` files, and later `app-shells/bash` updates will offer
-`._cfg` versions of them.
+Every file becomes a relative symlink into the repo, so editing the repo
+changes every user's desktop immediately (sway: run `swaymsg reload` or log in
+again). On Gentoo no installed file replaces one from a package. If a target
+path is already taken, the existing file is kept under
+`/var/lib/sway-dotfiles/backup/<path>`, not next to it, because a backup inside
+a `config.d/` directory would be loaded by its glob. (Files under `etc/skel/`,
+if ever added, are copied instead of linked, since each new user must own
+their copy.)
+
+New users get the distro's default shell files; nothing here depends on
+`~/.local/bin`.
 
 `install.sh` records what it installed in `/var/lib/sway-dotfiles/manifest`.
 Running it again removes links for files that have left the repo.
