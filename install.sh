@@ -17,8 +17,10 @@ home and every user must own their copy. Everything else becomes a relative
 symlink into this repo, so links resolve the same from a live USB
 (--root /mnt/gentoo) and after boot, wherever the repo sits under the root.
 
-A file that is replaced is kept as <path>.pre-sway-dotfiles. What was
-installed is recorded in <root>/var/lib/sway-dotfiles/manifest: installing
+A file that is replaced is kept under <root>/var/lib/sway-dotfiles/backup/
+(not next to it: /etc/skel is copied whole into new homes, and config.d
+globs would load it). What was installed is recorded in
+<root>/var/lib/sway-dotfiles/manifest: installing
 again removes links for files that left the repo, and --uninstall restores
 the previous state.
 
@@ -39,7 +41,6 @@ host=
 distro=
 dry=0
 action=install
-suffix=.pre-sway-dotfiles
 
 while [ $# -gt 0 ]; do
     case $1 in
@@ -57,6 +58,7 @@ done
 root=$(readlink -f "$root")
 prefix=${root%/}   # "" for the running system
 manifest=$prefix/var/lib/sway-dotfiles/manifest
+backups=$prefix/var/lib/sway-dotfiles/backup
 
 if [ "$dry" = 0 ] && [ ! -w "${prefix:-/}" ]; then
     die "cannot write to ${prefix:-/}: run as root, or use --dry-run"
@@ -113,9 +115,11 @@ remove_one() {
         say remove "$path"
         run rm -f "$dest"
     fi
-    if [ -e "$dest$suffix" ] || [ -L "$dest$suffix" ]; then
-        say restore "$path$suffix -> $path"
-        run mv "$dest$suffix" "$dest"
+    local backup=$backups$path
+    if [ -e "$backup" ] || [ -L "$backup" ]; then
+        say restore "$path"
+        run mv "$backup" "$dest"
+        [ "$dry" = 1 ] || prune_dirs "$backup"
     elif [ "$dry" = 0 ]; then
         prune_dirs "$dest"
     fi
@@ -127,11 +131,13 @@ make_room() {
     [ -e "$dest" ] || [ -L "$dest" ] || return 0
     is_our_link "$dest" && return 0
     [ "${old_mode[$path]:-}" = copy ] && return 0
-    if [ -e "$dest$suffix" ] || [ -L "$dest$suffix" ]; then
-        die "$path$suffix already exists; move one of them away first"
+    local backup=$backups$path
+    if [ -e "$backup" ] || [ -L "$backup" ]; then
+        die "a backup of $path already exists in ${backups#"$prefix"}; move one of them away first"
     fi
-    say backup "$path -> $path$suffix"
-    run mv "$dest" "$dest$suffix"
+    say backup "$path -> ${backup#"$prefix"}"
+    run mkdir -p "$(dirname "$backup")"
+    run mv "$dest" "$backup"
 }
 
 install_one() {

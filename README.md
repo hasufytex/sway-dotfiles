@@ -48,9 +48,11 @@ sudo ./install.sh
 Everything except `etc/skel/` becomes a relative symlink into the repo, so
 editing the repo changes every user's desktop immediately (sway: run
 `swaymsg reload` or log in again). Skel files are copied, because each new user
-must own their copy. A file that is replaced is kept as
-`<path>.pre-sway-dotfiles`; on Gentoo that is only the two `/etc/skel` files,
-and later `app-shells/bash` updates will offer `._cfg` versions of them.
+must own their copy. A file that is replaced is kept under
+`/var/lib/sway-dotfiles/backup/<path>`, not next to it (`/etc/skel` is copied
+whole into new homes, and `config.d/*` globs would load it). On Gentoo that is
+only the two `/etc/skel` files, and later `app-shells/bash` updates will offer
+`._cfg` versions of them.
 
 `install.sh` records what it installed in `/var/lib/sway-dotfiles/manifest`.
 Running it again removes links for files that have left the repo.
