@@ -1,0 +1,42 @@
+#!/bin/sh
+# Run Sunshine for the current sway session only, restarting it if it crashes.
+# Started from the sway config with: exec ~/.local/bin/sunshine-session
+#
+# Nothing here polls. A blocking sway IPC subscription returns when sway sends
+# its "shutdown" event, or when its socket closes if sway crashes, and the
+# restart loop just waits for Sunshine to exit.
+
+pidfile="${XDG_RUNTIME_DIR:-/tmp}/sunshine-session.pid"
+
+# Replace the previous copy of this script (found through its PID file, and
+# only if that PID is still this script). Its own cleanup stops its Sunshine.
+if [ -r "$pidfile" ]; then
+    old=$(cat "$pidfile")
+    if [ -n "$old" ] && [ "$old" != "$$" ] &&
+        tr '\0' ' ' < "/proc/$old/cmdline" 2>/dev/null | grep -q '/sunshine-session'; then
+        kill "$old" 2>/dev/null
+        timeout 5 tail --pid="$old" -f /dev/null
+    fi
+fi
+echo $$ > "$pidfile"
+pkill -x sunshine    # anything not started by this script
+
+cleanup() {
+    trap - TERM INT HUP
+    kill "$loop" "$watcher" 2>/dev/null
+    pkill -x sunshine
+    [ "$(cat "$pidfile" 2>/dev/null)" = "$$" ] && rm -f "$pidfile"
+    exit 0
+}
+trap cleanup TERM INT HUP
+
+# Restart Sunshine whenever it exits.
+( while :; do sunshine; sleep 3; done ) &
+loop=$!
+
+# Returns on sway's shutdown event, or when the IPC socket goes away.
+swaymsg -t subscribe '["shutdown"]' >/dev/null 2>&1 &
+watcher=$!
+
+wait "$watcher"
+cleanup

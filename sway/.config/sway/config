@@ -4,13 +4,32 @@ default_floating_border none
 seat seat0 xcursor_theme Adwaita 24
 exec_always gsettings set org.gnome.desktop.interface cursor-theme Adwaita
 exec_always gsettings set org.gnome.desktop.interface cursor-size 24
+exec_always gsettings set org.gnome.desktop.interface gtk-theme Adwaita
+exec_always gsettings set org.gnome.desktop.interface color-scheme prefer-dark
+
+# Match font rendering across GTK and Fontconfig clients.
+exec_always gsettings set org.gnome.desktop.interface font-rendering manual
+exec_always gsettings set org.gnome.desktop.interface font-antialiasing rgba
+exec_always gsettings set org.gnome.desktop.interface font-hinting slight
+exec_always gsettings set org.gnome.desktop.interface font-rgba-order rgb
 
 exec dbus-update-activation-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=sway
 exec gentoo-pipewire-launcher restart
 exec /usr/libexec/xdg-desktop-portal-wlr
 exec /usr/libexec/xdg-desktop-portal
+exec /usr/libexec/polkit-gnome-authentication-agent-1
 
-exec swayidle -w timeout 600 'swaylock -f' before-sleep 'swaylock -f'
+# Game-stream host for Moonlight (reached over Tailscale).
+# Restart it if it exits: it crashes when the monitor is switched off.
+# Only one copy may run (PID-file guard), and the loop ends once this sway
+# session is gone, so re-logging in doesn't leave an orphaned loop behind.
+exec ~/.local/bin/sunshine-session
+
+# Lock after 10 min idle. Displays stay powered on so Sunshine can always
+# capture them for Moonlight streaming.
+exec swayidle -w \
+    timeout 600 'swaylock -f' \
+    before-sleep 'swaylock -f'
 
 bindsym XF86AudioRaiseVolume exec pactl set-sink-volume @DEFAULT_SINK@ +10%
 bindsym XF86AudioLowerVolume exec pactl set-sink-volume @DEFAULT_SINK@ -10%
@@ -25,9 +44,10 @@ floating_modifier $mod
 tiling_drag enable
 
 bindsym $mod+q exec foot
+bindsym $mod+e exec dolphin
 bindsym $mod+c kill
 
-bindsym $mod+r exec wmenu-run -f "Liberation Mono 16" -N "#222222" -n "#888888" -S "#222222" -s "#ffffff"
+bindsym $mod+r exec wmenu-run -f "Liberation Mono 14" -N "#222222" -n "#888888" -S "#222222" -s "#ffffff"
 bindsym $mod+b exec ~/.local/bin/bar-toggle
 
 bindsym --no-repeat $mod+Shift+s exec ~/.local/bin/screenshot_save_wl.sh
@@ -101,15 +121,23 @@ mode "resize" {
 }
 bindsym $mod+Ctrl+r mode "resize"
 
-output DP-3 mode 2560x1440@170Hz
-output DP-3 adaptive_sync on
+output DP-3 mode 2560x1440@170Hz position 0 0
+output DP-3 scale 1
+output DP-3 subpixel rgb
+output DP-3 adaptive_sync off
+
+# Virtual display so Sunshine still has something to stream when the monitor
+# is off. headless-fallback.sh enables it only while DP-3 is gone, so there is
+# always exactly one screen and windows move to whichever one is active.
+output HEADLESS-1 mode 2560x1440@60Hz position 0 0
+exec ~/.config/sway/headless-fallback.sh
 
 input type:keyboard {
     xkb_layout "us,bg"
     xkb_variant ",phonetic"
     xkb_options "grp:alt_shift_toggle"
-    repeat_delay 350
-    repeat_rate 20
+    repeat_delay 250
+    repeat_rate 40
 }
 
 input type:pointer {
