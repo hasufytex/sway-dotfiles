@@ -27,7 +27,7 @@ Where things end up:
 | `/usr/local/etc/sway/config.d/` | distro and host sway parts |
 | `/usr/local/etc/desktop-session.d/*.sh` | host env sourced by `sway-session` and `plasma-session` (sets `SWAY_FLAGS`) |
 | `/usr/local/bin/` | `sway-session`, `plasma-session`, `bar-toggle`, screenshot scripts, `sunshine-session`, `sway-headless-fallback` |
-| `/usr/local/etc/xdg/` | foot and GTK settings; `/etc/profile.d/sway-dotfiles.sh` puts this first in `XDG_CONFIG_DIRS` so the distro's own `/etc/xdg` and `/etc/gtk-3.0` files stay untouched |
+| `/usr/local/etc/xdg/` | foot config; `/etc/profile.d/sway-dotfiles.sh` puts this first in `XDG_CONFIG_DIRS` so the distro's own `/etc/xdg` files stay untouched (GTK theming is set via `gsettings` in the sway config) |
 | `/etc/xdg/kdeglobals`, `/etc/xdg/mimeapps.list` | Breeze Dark for Qt apps, Firefox as default browser |
 | `/etc/swaylock/config`, `/etc/fonts/local.conf`, `/etc/mpv/mpv.conf` | lock colour, font rendering, mpv |
 | `/etc/pipewire/…`, `/etc/wireplumber/…` | PipeWire and WirePlumber drop-ins |

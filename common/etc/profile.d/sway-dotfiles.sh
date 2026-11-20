@@ -1,4 +1,4 @@
-# Let XDG-aware apps (foot, GTK) find the desktop defaults installed in
+# Let XDG-aware apps (e.g. foot) find the desktop defaults installed in
 # /usr/local/etc/xdg before the distro's /etc/xdg. Users' own ~/.config
 # still wins over both.
 case ":${XDG_CONFIG_DIRS:=/etc/xdg}:" in
